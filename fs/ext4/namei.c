@@ -1129,6 +1129,7 @@ static inline int ext4_ci_match (int len, const char * const name,
 		return 0;
 	return !strncasecmp(name, de->name, len);
 }
+
 /*
  * Returns 0 if not found, -1 on failure, and 1 on success
  */
