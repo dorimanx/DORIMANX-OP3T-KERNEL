@@ -48,10 +48,8 @@
 #include <crypto/ice.h>
 #include <linux/delay.h>
 
-#ifdef CONFIG_COMPAT
 #include <linux/compat.h>
-#include <linux/compat_qseecom.h>
-#endif
+#include "compat_qseecom.h"
 
 #define QSEECOM_DEV			"qseecom"
 #define QSEOS_VERSION_14		0x14
