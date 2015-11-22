@@ -436,7 +436,7 @@ static void __set_user_nice_no_resched(long nice)
 {
 	preempt_disable();
 	set_user_nice(current, nice);
-	sched_preempt_enable_no_resched();
+	preempt_enable_no_resched();
 }
 
 static void kfree_no_resched(const void *objp)
