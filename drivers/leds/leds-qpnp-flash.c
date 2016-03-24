@@ -882,7 +882,7 @@ static struct device_attribute qpnp_flash_led_attrs[] = {
 				qpnp_flash_led_die_temp_store),
 };
 
-static int qpnp_flash_led_get_thermal_derate_rate(const char *rate)
+static u32 qpnp_flash_led_get_thermal_derate_rate(const char *rate)
 {
 	/*
 	 * return 5% derate as default value if user specifies
@@ -902,7 +902,7 @@ static int qpnp_flash_led_get_thermal_derate_rate(const char *rate)
 		return RATE_5_PERCENT;
 }
 
-static int qpnp_flash_led_get_ramp_step(const char *step)
+static u32 qpnp_flash_led_get_ramp_step(const char *step)
 {
 	/*
 	 * return 27 us as default value if user specifies
@@ -2226,12 +2226,6 @@ static int qpnp_flash_led_parse_common_dt(
 		if (!rc) {
 			temp_val =
 				qpnp_flash_led_get_thermal_derate_rate(temp);
-			if (temp_val < 0) {
-				dev_err(&led->spmi_dev->dev,
-					"Invalid thermal derate rate\n");
-				return -EINVAL;
-			}
-
 			led->pdata->thermal_derate_rate = (u8)temp_val;
 		} else {
 			dev_err(&led->spmi_dev->dev,
@@ -2260,11 +2254,6 @@ static int qpnp_flash_led_parse_common_dt(
 		rc = of_property_read_string(node, "qcom,ramp_up_step", &temp);
 		if (!rc) {
 			temp_val = qpnp_flash_led_get_ramp_step(temp);
-			if (temp_val < 0) {
-				dev_err(&led->spmi_dev->dev,
-					"Invalid ramp up step values\n");
-				return -EINVAL;
-			}
 			led->pdata->ramp_up_step = (u8)temp_val;
 		} else if (rc != -EINVAL) {
 			dev_err(&led->spmi_dev->dev,
@@ -2276,11 +2265,6 @@ static int qpnp_flash_led_parse_common_dt(
 		rc = of_property_read_string(node, "qcom,ramp_dn_step", &temp);
 		if (!rc) {
 			temp_val = qpnp_flash_led_get_ramp_step(temp);
-			if (temp_val < 0) {
-				dev_err(&led->spmi_dev->dev,
-					"Invalid ramp down step values\n");
-				return rc;
-			}
 			led->pdata->ramp_dn_step = (u8)temp_val;
 		} else if (rc != -EINVAL) {
 			dev_err(&led->spmi_dev->dev,
@@ -2482,12 +2466,12 @@ static int qpnp_flash_led_probe(struct spmi_device *spmi)
 		return -ENOMEM;
 	}
 
-	led->peripheral_type =
-			(u8)qpnp_flash_led_get_peripheral_type(led);
-	if (led->peripheral_type < 0) {
+	rc = qpnp_flash_led_get_peripheral_type(led);
+	if (rc < 0) {
 		dev_err(&spmi->dev, "Failed to get peripheral type\n");
 		return rc;
 	}
+	led->peripheral_type = (u8) rc;
 
 	rc = qpnp_flash_led_parse_common_dt(led, node);
 	if (rc) {
@@ -2531,6 +2515,7 @@ static int qpnp_flash_led_probe(struct spmi_device *spmi)
 	}
 
 	for_each_child_of_node(node, temp) {
+		j = -1;
 		led->flash_node[i].cdev.brightness_set =
 						qpnp_flash_led_brightness_set;
 		led->flash_node[i].cdev.brightness_get =
@@ -2606,7 +2591,6 @@ static int qpnp_flash_led_probe(struct spmi_device *spmi)
 			if (rc)
 				goto error_led_register;
 		}
-
 		i++;
 	}
 
@@ -2618,7 +2602,7 @@ static int qpnp_flash_led_probe(struct spmi_device *spmi)
 			(long)root);
 		if (PTR_ERR(root) == -ENODEV)
 			pr_err("debugfs is not enabled in kernel");
-		goto error_led_debugfs;
+		goto error_free_led_sysfs;
 	}
 
 	led->dbgfs_root = root;
@@ -2648,6 +2632,8 @@ static int qpnp_flash_led_probe(struct spmi_device *spmi)
 	return 0;
 
 error_led_debugfs:
+	debugfs_remove_recursive(root);
+error_free_led_sysfs:
 	i = led->num_leds - 1;
 error_led_register:
 	for (; i >= 0; i--) {
@@ -2656,8 +2642,6 @@ error_led_register:
 						&qpnp_flash_led_attrs[j].attr);
 		led_classdev_unregister(&led->flash_node[i].cdev);
 	}
-	if (!IS_ERR_OR_NULL(root))
-		debugfs_remove_recursive(root);
 	mutex_destroy(&led->flash_led_lock);
 	destroy_workqueue(led->ordered_workq);
 
