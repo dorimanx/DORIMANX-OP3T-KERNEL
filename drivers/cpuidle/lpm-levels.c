@@ -1004,6 +1004,9 @@ static int lpm_cpuidle_enter(struct cpuidle_device *dev,
 	struct power_params *pwr_params;
 	struct clk *cpu_clk = per_cpu(cpu_clocks, dev->cpu);
 
+	if (idx < 0)
+		return -EINVAL;
+
 	pwr_params = &cluster->cpu->levels[idx].pwr;
 	sched_set_cpu_cstate(smp_processor_id(), idx + 1,
 		pwr_params->energy_overhead, pwr_params->latency_us);
@@ -1011,15 +1014,15 @@ static int lpm_cpuidle_enter(struct cpuidle_device *dev,
 	cpu_prepare(cluster, idx, true);
 	cluster_prepare(cluster, cpumask, idx, true, ktime_to_ns(ktime_get()));
 
-	if (need_resched() || (idx < 0))
-		goto exit;
-
 	trace_cpu_idle_enter(idx);
 	lpm_stats_cpu_enter(idx, start_time);
 
 	if (idx > 0 && cpu_clk && l2_clk)
 		trace_cpu_idle_enter_cpu_freq(dev->cpu, clk_get_rate(cpu_clk),
 					clk_get_rate(l2_clk));
+
+	if (need_resched())
+		goto exit;
 
 	if (!use_psci) {
 		if (idx > 0)
