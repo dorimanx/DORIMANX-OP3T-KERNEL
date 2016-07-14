@@ -572,6 +572,7 @@ struct mdss_mdp_ctl {
 
 	/* dynamic resolution switch during cont-splash handoff */
 	bool switch_with_handoff;
+	bool commit_in_progress;
 };
 
 struct mdss_mdp_mixer {
