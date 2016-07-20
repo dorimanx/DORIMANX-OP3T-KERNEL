@@ -19688,7 +19688,7 @@ static int wma_wow_wakeup_host_event(void *handle, u_int8_t *event,
 
 	wake_info = param_buf->fixed_param;
 
-	WMA_LOGA("WOW wakeup host event received (reason: %s(%d)) for vdev %d",
+	WMA_LOGD("WOW wakeup host event received (reason: %s(%d)) for vdev %d",
 		 wma_wow_wake_reason_str(wake_info->wake_reason, wma),
 		 wake_info->wake_reason,
 		 wake_info->vdev_id);
