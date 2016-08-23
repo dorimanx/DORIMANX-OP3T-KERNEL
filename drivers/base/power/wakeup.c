@@ -16,6 +16,7 @@
 #include <linux/debugfs.h>
 #include <linux/types.h>
 #include <linux/moduleparam.h>
+#include <linux/proc_fs.h>
 #include <trace/events/power.h>
 #include <linux/fb.h>
 
@@ -1063,6 +1064,15 @@ static int __init wakeup_sources_debugfs_init(void)
 
 	wakeup_sources_stats_dentry = debugfs_create_file("wakeup_sources",
 			S_IRUGO, NULL, NULL, &wakeup_sources_stats_fops);
+	/* Fall back to procfs if debugfs is not available */
+	if (wakeup_sources_stats_dentry == ERR_PTR(-ENODEV)) {
+		struct proc_dir_entry *dir;
+
+		dir = proc_mkdir("wakeup", NULL);
+		if (dir)
+			proc_create("wakeup_sources", S_IRUGO,
+					dir, &wakeup_sources_stats_fops);
+	}
 	return 0;
 }
 
