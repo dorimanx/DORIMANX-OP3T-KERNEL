@@ -1497,7 +1497,7 @@ static int afe_send_codec_reg_page_config(
 static int afe_send_codec_reg_config(
 	struct afe_param_cdc_reg_cfg_data *cdc_reg_cfg)
 {
-	int i, ret;
+	int i, ret = -EINVAL;
 	int pkt_size, payload_size;
 	struct afe_svc_cmd_cdc_reg_cfg *config;
 	struct afe_svc_cmd_set_param *param;

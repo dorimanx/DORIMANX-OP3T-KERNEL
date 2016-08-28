@@ -2790,7 +2790,7 @@ static ssize_t blink_store(struct device *dev,
 	struct device_attribute *attr,
 	const char *buf, size_t count)
 {
-	struct qpnp_led_data *led;
+	struct qpnp_led_data *led = NULL;
 	unsigned long blinking;
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	ssize_t ret = -EINVAL;
