@@ -13972,6 +13972,10 @@ int hdd_wlan_startup(struct device *dev, v_VOID_t *hif_sc)
       goto err_config;
    }
 
+   /* If IPA HW is not existing, disable offload from INI */
+   if (!hdd_ipa_is_present(pHddCtx))
+      hdd_ipa_reset_ipaconfig(pHddCtx, 0);
+
    ((VosContextType*)pVosContext)->pHIFContext = hif_sc;
 
    /* store target type and target version info in hdd ctx */
