@@ -428,15 +428,15 @@ static ssize_t voice_svc_write(struct file *file, const char __user *buf,
 		 */
 		if (count >= (sizeof(struct voice_svc_write_msg) +
 			      sizeof(struct voice_svc_cmd_request))) {
-		ret = voice_svc_send_req(
+			ret = voice_svc_send_req(
 			(struct voice_svc_cmd_request *)data->payload, prtd);
-		if (!ret)
-			ret = count;
-	} else {
-		pr_err("%s: invalid payload size\n", __func__);
-		ret = -EINVAL;
-		goto done;
-	}
+			if (!ret)
+				ret = count;
+		} else {
+			pr_err("%s: invalid payload size\n", __func__);
+			ret = -EINVAL;
+			goto done;
+		}
 		break;
 	default:
 		pr_debug("%s: Invalid command: %u\n", __func__, cmd);
