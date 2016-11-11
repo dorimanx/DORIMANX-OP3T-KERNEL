@@ -124,7 +124,7 @@ irqreturn_t switch_dev_interrupt(int irq, void *_dev)
 
 static void timer_handle(unsigned long arg)
 {
-    //mod_timer(&s_timer, jiffies + HZ);
+    //mod_timer(&s_timer, jiffies + msecs_to_jiffies(1000));
   //  if(set_gpio_by_pinctrl() < 0)
    //      printk(KERN_ERR "tristate_key set_gpio_by_pinctrl FAILD!!!. \n");
     schedule_work(&switch_data->work);
@@ -442,7 +442,7 @@ static int tristate_dev_probe(struct platform_device *pdev)
 
         init_timer(&switch_data->s_timer);
         switch_data->s_timer.function = &timer_handle;
-        switch_data->s_timer.expires = jiffies + 5*HZ;
+        switch_data->s_timer.expires = jiffies + msecs_to_jiffies(5000);
 
         add_timer(&switch_data->s_timer);
 
