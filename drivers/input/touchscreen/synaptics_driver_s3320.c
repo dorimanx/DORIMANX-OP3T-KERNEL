@@ -163,6 +163,9 @@ int Down2UpSwip_gesture =0;//"down to up |"
 int Wgestrue_gesture =0;//"(W)"
 int Mgestrue_gesture =0;//"(M)"
 static int gesture_switch = 0;
+
+int DisableGestureHaptic = 0;
+
 #endif
 
 /*********************for Debug LOG switch*******************/
@@ -211,6 +214,7 @@ static struct workqueue_struct *synaptics_wq = NULL;
 static struct workqueue_struct *synaptics_report = NULL;
 static struct workqueue_struct *get_base_report = NULL;
 static struct proc_dir_entry *prEntry_tp = NULL;
+void qpnp_hap_ignore_next_request(void);
 
 
 #ifdef SUPPORT_GESTURE
@@ -1227,6 +1231,9 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 	if((gesture == DouTap && DouTap_gesture)||(gesture == RightVee && RightVee_gesture)\
         ||(gesture == LeftVee && LeftVee_gesture)||(gesture == UpVee && UpVee_gesture)\
         ||(gesture == Circle && Circle_gesture)||(gesture == DouSwip && DouSwip_gesture)){
+		if (DisableGestureHaptic)
+			qpnp_hap_ignore_next_request();
+		
 		gesture_upload = gesture;
 		input_report_key(ts->input_dev, keyCode, 1);
 		input_sync(ts->input_dev);
@@ -1648,6 +1655,27 @@ static ssize_t gesture_switch_write_func(struct file *file, const char __user *p
 	return count;
 }
 
+static ssize_t haptic_feedback_disable_read_func(struct file *file, char __user *user_buf, size_t count, loff_t *ppos)
+{
+	int ret = 0;
+	char page[PAGESIZE];
+
+	ret = sprintf(page, "%d\n", DisableGestureHaptic);
+	ret = simple_read_from_buffer(user_buf, count, ppos, page, strlen(page));
+
+	return ret;
+}
+
+static ssize_t haptic_feedback_disable_write_func(struct file *file, const char __user *buf, size_t count, loff_t *ppos)
+{
+	int ret = 0;
+
+	sscanf(buf, "%d", &ret);
+	DisableGestureHaptic = ret;
+
+	return count;
+}
+
 /******************************start****************************/
 static const struct file_operations tp_gesture_proc_fops = {
 	.write = tp_gesture_write_func,
@@ -1665,6 +1693,13 @@ static const struct file_operations gesture_switch_proc_fops = {
 
 static const struct file_operations coordinate_proc_fops = {
 	.read =  coordinate_proc_read_func,
+	.open = simple_open,
+	.owner = THIS_MODULE,
+};
+
+static const struct file_operations haptic_feedback_disable_proc_fops = {
+	.write = haptic_feedback_disable_write_func,
+	.read =  haptic_feedback_disable_read_func,
 	.open = simple_open,
 	.owner = THIS_MODULE,
 };
@@ -3063,6 +3098,12 @@ static int init_synaptics_proc(void)
 	if(prEntry_tmp == NULL){
 		ret = -ENOMEM;
 		TPD_ERR("Couldn't create coordinate\n");
+	}
+
+	prEntry_tmp = proc_create("haptic_feedback_disable", 0666, prEntry_tp, &haptic_feedback_disable_proc_fops);
+	if(prEntry_tmp == NULL){
+		ret = -ENOMEM;
+		TPD_ERR("Couldn't create haptic_feedback_disable\n");
 	}
 #endif
 
