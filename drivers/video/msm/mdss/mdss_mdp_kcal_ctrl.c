@@ -306,7 +306,7 @@ static ssize_t kcal_enable_show(struct device *dev,
 	return scnprintf(buf, PAGE_SIZE, "%d\n", lut_data->enable);
 }
 
-/*static ssize_t kcal_invert_store(struct device *dev,
+static ssize_t kcal_invert_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
 	int kcal_invert, r;
@@ -317,7 +317,7 @@ static ssize_t kcal_enable_show(struct device *dev,
 		(lut_data->invert == kcal_invert))
 		return -EINVAL;
 
-	lut_data->invert = kcal_invert;
+	lut_data->invert = 0; /* invert always disabled */
 
 	mdss_mdp_kcal_update_pcc(lut_data);
 	mdss_mdp_kcal_display_commit();
@@ -331,7 +331,7 @@ static ssize_t kcal_invert_show(struct device *dev,
 	struct kcal_lut_data *lut_data = dev_get_drvdata(dev);
 
 	return scnprintf(buf, PAGE_SIZE, "%d\n", lut_data->invert);
-}*/
+}
 
 static ssize_t kcal_sat_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
@@ -441,8 +441,8 @@ static DEVICE_ATTR(kcal, S_IWUSR | S_IRUGO, kcal_show, kcal_store);
 static DEVICE_ATTR(kcal_min, S_IWUSR | S_IRUGO, kcal_min_show, kcal_min_store);
 static DEVICE_ATTR(kcal_enable, S_IWUSR | S_IRUGO, kcal_enable_show,
 	kcal_enable_store);
-/*static DEVICE_ATTR(kcal_invert, S_IWUSR | S_IRUGO, kcal_invert_show,
-	kcal_invert_store);*/
+static DEVICE_ATTR(kcal_invert, S_IWUSR | S_IRUGO, kcal_invert_show,
+	kcal_invert_store);
 static DEVICE_ATTR(kcal_sat, S_IWUSR | S_IRUGO, kcal_sat_show, kcal_sat_store);
 static DEVICE_ATTR(kcal_hue, S_IWUSR | S_IRUGO, kcal_hue_show, kcal_hue_store);
 static DEVICE_ATTR(kcal_val, S_IWUSR | S_IRUGO, kcal_val_show, kcal_val_store);
@@ -481,7 +481,7 @@ static int kcal_ctrl_probe(struct platform_device *pdev)
 	ret = device_create_file(&pdev->dev, &dev_attr_kcal);
 	ret |= device_create_file(&pdev->dev, &dev_attr_kcal_min);
 	ret |= device_create_file(&pdev->dev, &dev_attr_kcal_enable);
-	//ret |= device_create_file(&pdev->dev, &dev_attr_kcal_invert);
+	ret |= device_create_file(&pdev->dev, &dev_attr_kcal_invert);
 	ret |= device_create_file(&pdev->dev, &dev_attr_kcal_sat);
 	ret |= device_create_file(&pdev->dev, &dev_attr_kcal_hue);
 	ret |= device_create_file(&pdev->dev, &dev_attr_kcal_val);
@@ -499,7 +499,7 @@ static int kcal_ctrl_remove(struct platform_device *pdev)
 	device_remove_file(&pdev->dev, &dev_attr_kcal);
 	device_remove_file(&pdev->dev, &dev_attr_kcal_min);
 	device_remove_file(&pdev->dev, &dev_attr_kcal_enable);
-	//device_remove_file(&pdev->dev, &dev_attr_kcal_invert);
+	device_remove_file(&pdev->dev, &dev_attr_kcal_invert);
 	device_remove_file(&pdev->dev, &dev_attr_kcal_sat);
 	device_remove_file(&pdev->dev, &dev_attr_kcal_hue);
 	device_remove_file(&pdev->dev, &dev_attr_kcal_val);
