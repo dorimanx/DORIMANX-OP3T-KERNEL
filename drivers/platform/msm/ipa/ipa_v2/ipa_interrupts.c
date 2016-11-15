@@ -183,8 +183,8 @@ static void ipa_process_interrupts(bool isr_context)
 					ipa_write_reg(ipa_ctx->mmio,
 					IPA_IRQ_CLR_EE_n_ADDR(ipa_ee), bmsk);
 
-					/* Process the interrupts */
-					handle_interrupt(i, isr_context);
+				/* Process the interrupts */
+				handle_interrupt(i, isr_context);
 
 				/* Clear non uC interrupt after processing
 				   to avoid clearing interrupt data */
