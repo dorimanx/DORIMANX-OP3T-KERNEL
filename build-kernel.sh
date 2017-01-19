@@ -22,6 +22,11 @@ if [ "$CHECK_ZIP" -eq "1" ]; then
 	rm READY-KERNEL/*.zip;
 fi;
 
+# check if .config exit before building
+if [ ! -e "$KERNELDIR/.config" ]; then
+	cp "$KERNELDIR"/arch/arm64/configs/"$KERNEL_CONFIG_FILE" .config;
+fi;
+
 BUILD_NOW()
 {
 	PYTHON_CHECK=$(ls -la /usr/bin/python | grep python3 | wc -l);
