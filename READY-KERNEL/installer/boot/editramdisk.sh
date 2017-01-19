@@ -29,9 +29,39 @@ fi
 cp /tmp/modules.img /tmp/ramdisk/
 chmod 0644 /tmp/ramdisk/modules.img
 
-# mount modules image
+# mount modules image and reload modules
+# first cleanup init.qcom.rc
+if [ $(grep -c "rmmod wlan.ko" /tmp/ramdisk/init.qcom.rc) == 1 ]; then
+	sed -i '/rmmod wlan.ko/d' /tmp/ramdisk/init.qcom.rc
+fi
+if [ $(grep -c "rmmod crpl.ko" /tmp/ramdisk/init.qcom.rc) == 1 ]; then
+	sed -i '/rmmod crpl.ko/d' /tmp/ramdisk/init.qcom.rc
+fi
+if [ $(grep -c "modules.img" /tmp/ramdisk/init.qcom.rc) == 1 ]; then
+	sed -i '/mount ext4 loop\@\/modules\.img \/system\/lib\/modules noatime ro/d' /tmp/ramdisk/init.qcom.rc
+fi
+if [ $(grep -c "insmod /system/lib/modules/crpl.ko" /tmp/ramdisk/init.qcom.rc) == 1 ]; then
+	sed -i '/insmod \/system\/lib\/modules\/crpl\.ko/d' /tmp/ramdisk/init.qcom.rc
+fi
+if [ $(grep -c "insmod /system/lib/modules/wlan.ko" /tmp/ramdisk/init.qcom.rc) == 1 ]; then
+	sed -i '/insmod \/system\/lib\/modules\/wlan\.ko/d' /tmp/ramdisk/init.qcom.rc
+fi
+
+# add my stuff
+if [ $(grep -c "rmmod wlan.ko" /tmp/ramdisk/init.qcom.rc) == 0 ]; then
+	sed -i "/on boot/a\ \ \ \ rmmod wlan.ko" /tmp/ramdisk/init.qcom.rc
+fi
+if [ $(grep -c "rmmod crpl.ko" /tmp/ramdisk/init.qcom.rc) == 0 ]; then
+	sed -i "/rmmod wlan.ko/a\ \ \ \ rmmod crpl.ko" /tmp/ramdisk/init.qcom.rc
+fi
 if [ $(grep -c "modules.img" /tmp/ramdisk/init.qcom.rc) == 0 ]; then
-	sed -i "/on boot/a\ \ \ \ mount ext4 loop\@\/modules\.img \/system\/lib\/modules noatime ro" /tmp/ramdisk/init.qcom.rc
+	sed -i "/rmmod crpl.ko/a\ \ \ \ mount ext4 loop\@\/modules\.img \/system\/lib\/modules noatime ro" /tmp/ramdisk/init.qcom.rc
+fi
+if [ $(grep -c "insmod /system/lib/modules/crpl.ko" /tmp/ramdisk/init.qcom.rc) == 0 ]; then
+	sed -i "/mount ext4 loop\@\/modules\.img \/system\/lib\/modules noatime ro/a\ \ \ \ insmod /system/lib/modules/crpl.ko" /tmp/ramdisk/init.qcom.rc
+fi
+if [ $(grep -c "insmod /system/lib/modules/wlan.ko" /tmp/ramdisk/init.qcom.rc) == 0 ]; then
+	sed -i "/insmod \/system\/lib\/modules\/crpl.ko/a\ \ \ \ insmod /system/lib/modules/wlan.ko" /tmp/ramdisk/init.qcom.rc
 fi
 
 # allow mounting
