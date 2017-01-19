@@ -1,2 +1,5 @@
 *.img
 *.zip
+Image.gz-dtb
+installer/boot/modules.img
+installer/boot/Image.gz-dtb
