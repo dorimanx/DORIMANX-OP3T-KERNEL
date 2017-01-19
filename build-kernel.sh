@@ -100,12 +100,17 @@ BUILD_NOW()
 		fi;
 
 		# create ext4 image for my modules will be mounted on boot to /system/lib/modules
-		dd if=/dev/zero of=READY-KERNEL/modules.img bs=4k count=1750
+		dd if=/dev/zero of=READY-KERNEL/modules.img bs=4k count=2000
 		mkfs.ext4 READY-KERNEL/modules.img
 		tune2fs -c0 -i0 READY-KERNEL/modules.img
 		mount -o loop READY-KERNEL/modules.img READY-KERNEL/modules-img
 		cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/modules-img/
+		mkdir READY-KERNEL/modules-img/qca_cld
+		cd READY-KERNEL/modules-img/qca_cld
+		ln -s -f /system/lib/modules/wlan.ko qca_cld_wlan.ko
 		sync
+		cd $KERNELDIR;
+		du -sh READY-KERNEL/modules-img/
 		umount READY-KERNEL/modules-img/
 
 		cp READY-KERNEL/Image.gz-dtb READY-KERNEL/installer/boot/;
