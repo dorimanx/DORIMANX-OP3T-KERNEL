@@ -78,5 +78,8 @@ extern int mmc_suspend_clk_scaling(struct mmc_host *host);
 extern int mmc_resume_clk_scaling(struct mmc_host *host);
 extern int mmc_exit_clk_scaling(struct mmc_host *host);
 extern unsigned long mmc_get_max_frequency(struct mmc_host *host);
+
+int mmc_execute_tuning(struct mmc_card *card);
+
 #endif
 
