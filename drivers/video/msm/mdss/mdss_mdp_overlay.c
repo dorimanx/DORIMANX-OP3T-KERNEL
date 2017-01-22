@@ -1685,7 +1685,7 @@ int mdss_mode_switch(struct msm_fb_data_type *mfd, u32 mode)
 	struct mdss_rect l_roi, r_roi;
 	struct mdss_mdp_ctl *ctl = mfd_to_ctl(mfd);
 	struct mdss_mdp_ctl *sctl;
-	int rc;
+	int rc = 0;
 
 	pr_debug("fb%d switch to mode=%x\n", mfd->index, mode);
 	ATRACE_FUNC();
