@@ -3752,7 +3752,7 @@ skip_taps:
 	if (fast_recv) {
 		if (fast_recv(skb)) {
 			ret = NET_RX_SUCCESS;
-			goto unlock;
+			goto out;
 		}
 	}
 

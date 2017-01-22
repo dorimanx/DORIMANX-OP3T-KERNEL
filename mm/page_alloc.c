@@ -818,7 +818,8 @@ static void __free_pages_ok(struct page *page, unsigned int order)
 	local_irq_restore(flags);
 }
 
-void __free_pages_bootmem(struct page *page, unsigned int order)
+void __free_pages_bootmem(struct page *page, unsigned long pfn,
+						unsigned int order)
 {
 	unsigned int nr_pages = 1 << order;
 	struct page *p = page;
