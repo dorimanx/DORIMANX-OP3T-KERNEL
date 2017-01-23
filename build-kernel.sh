@@ -3,6 +3,14 @@ clear
 
 LANG=C
 
+# What you need installed to compile
+# gcc, gpp, cpp, c++, g++, lzma, lzop, ia32-libs flex
+
+# What you need to make configuration easier by using xconfig
+# qt4-dev, qmake-qt4, pkg-config
+
+# toolchain is already exist and set! in kernel git. android-toolchain-arm64/bin/
+
 # location
 KERNELDIR=$(readlink -f .);
 
@@ -15,16 +23,18 @@ fi;
 if [ -e "$KERNELDIR"/READY-KERNEL/modules/wlan.ko ]; then
 	rm "$KERNELDIR"/READY-KERNEL/modules/*.ko;
 fi;
+if [ -e "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb ]; then
+	rm "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb;
+fi;
 
 CHECK_ZIP=$(ls READY-KERNEL/*.zip | wc -l);
-
 if [ "$CHECK_ZIP" -eq "1" ]; then
 	rm READY-KERNEL/*.zip;
 fi;
 
-# check if .config exit before building
+# check if .config exist before building
 if [ ! -e "$KERNELDIR/.config" ]; then
-	cp "$KERNELDIR"/arch/arm64/configs/"$KERNEL_CONFIG_FILE" .config;
+	cp "$KERNELDIR"/arch/arm64/configs/"$KERNEL_CONFIG_FILE" "$KERNELDIR"/.config;
 fi;
 
 BUILD_NOW()
@@ -45,8 +55,6 @@ BUILD_NOW()
 	else
 		echo "Python2 is used! all good, building!";
 	fi;
-
-	cp "$KERNELDIR"/.config "$KERNELDIR"/arch/arm64/configs/"$KERNEL_CONFIG_FILE";
 
 	# remove all old modules before compile
 	for i in $(find "$KERNELDIR"/ -name "*.ko"); do
@@ -92,14 +100,14 @@ BUILD_NOW()
 			ln -s /usr/bin/python3 /usr/bin/python
 		fi;
 
-		# add kernel config to kernle zip for other devs
-		cp "$KERNELDIR"/.config READY-KERNEL/;
+		# add kernel config to kernel zip for other devs
+		cp "$KERNELDIR"/.config READY-KERNEL/installer;
 
 		if [ -e READY-KERNEL/modules.img ]; then
 			rm READY-KERNEL/modules.img;
 		fi;
 
-		# create ext4 image for my modules will be mounted on boot to /system/lib/modules
+		# create ext4 image for my modules it's will be mounted on boot to /system/lib/modules, image will be 8MB
 		dd if=/dev/zero of=READY-KERNEL/modules.img bs=4k count=2000
 		mkfs.ext4 READY-KERNEL/modules.img
 		tune2fs -c0 -i0 READY-KERNEL/modules.img
@@ -119,12 +127,12 @@ BUILD_NOW()
 		# get version from config
 		GETVER=$(grep 'Kernel-.*-V' .config |sed 's/Kernel-//g' | sed 's/.*".//g' | sed 's/-OP.*//g');
 
-		# create the flashable zip file from the contents of the output directory
+		# create the flashable zip file from the contents of the installer directory
 		cd READY-KERNEL/installer/;
-		echo "Make flashable zip..........."
+		echo "Creating flashable zip..........."
 		zip -r Kernel-"${GETVER}"-OP3T-"$(date +"[%H-%M]-[%d-%m]-PWR-CORE")".zip * >/dev/null
 		mv *.zip ../
-		cd ../../
+		cd $KERNELDIR;
 		echo "All Done";
 	else
 		if [ "$PYTHON_WAS_3" -eq "1" ]; then
