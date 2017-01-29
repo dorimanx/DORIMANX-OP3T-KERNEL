@@ -27,7 +27,7 @@ if [ -e "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb ]; then
 	rm "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb;
 fi;
 
-CHECK_ZIP=$(ls READY-KERNEL/*.zip | wc -l);
+CHECK_ZIP=$(find READY-KERNEL/ -name *.zip | wc -l);
 if [ "$CHECK_ZIP" -eq "1" ]; then
 	rm READY-KERNEL/*.zip;
 fi;
@@ -108,7 +108,7 @@ BUILD_NOW()
 		fi;
 
 		# create ext4 image for my modules it's will be mounted on boot to /system/lib/modules, image will be 8MB
-		dd if=/dev/zero of=READY-KERNEL/modules.img bs=4k count=2000
+		dd if=/dev/zero of=READY-KERNEL/modules.img bs=4k count=2500
 		mkfs.ext4 READY-KERNEL/modules.img
 		tune2fs -c0 -i0 READY-KERNEL/modules.img
 		mount -o loop READY-KERNEL/modules.img READY-KERNEL/modules-img
