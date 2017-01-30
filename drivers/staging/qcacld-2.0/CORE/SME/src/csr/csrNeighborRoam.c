@@ -6039,7 +6039,7 @@ eHalStatus csrNeighborRoamCandidateFoundIndHdlr(tpAniSirGlobal pMac, void* pMsg)
          * purge non-P2P results from the past */
         csrScanFlushSelectiveResult(pMac, VOS_FALSE);
         /* Once it gets the candidates found indication from PE, will issue
-         * a scan req to PE with ?freshScan? in scanreq structure set
+         * a scan req to PE with “freshScan” in scanreq structure set
          * as follows: 0x42 - Return & purge LFR scan results
          */
         status = csrScanRequestLfrResult(pMac, sessionId,
