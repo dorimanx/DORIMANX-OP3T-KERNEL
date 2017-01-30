@@ -107,7 +107,8 @@ BUILD_NOW()
 			rm READY-KERNEL/modules.img;
 		fi;
 
-		# create ext4 image for my modules it's will be mounted on boot to /system/lib/modules, image will be 8MB
+		# create ext4 image for my modules it's will be mounted on boot to /system/lib/modules, image will be 10MB
+		# Kernel allow ~50mb for ramdisk (68MB root partition)
 		dd if=/dev/zero of=READY-KERNEL/modules.img bs=4k count=2500
 		mkfs.ext4 READY-KERNEL/modules.img
 		tune2fs -c0 -i0 READY-KERNEL/modules.img
