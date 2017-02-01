@@ -68,28 +68,70 @@ SCHED=`grep selected.1 /tmp/aroma/disk.prop | cut -d '=' -f2`
 if [ $SCHED = 1 ]; then
   echo "write /sys/block/dm-0/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sda/queue/scheduler cfq"  >> $CONFIGFILE
+  echo "write /sys/block/sdb/queue/scheduler cfq"  >> $CONFIGFILE
+  echo "write /sys/block/sdc/queue/scheduler cfq"  >> $CONFIGFILE
+  echo "write /sys/block/sdd/queue/scheduler cfq"  >> $CONFIGFILE
+  echo "write /sys/block/sde/queue/scheduler cfq"  >> $CONFIGFILE
+  echo "write /sys/block/sdf/queue/scheduler cfq"  >> $CONFIGFILE
 elif [ $SCHED = 2 ]; then
   echo "write /sys/block/dm-0/queue/scheduler deadline"  >> $CONFIGFILE
   echo "write /sys/block/sda/queue/scheduler deadline"  >> $CONFIGFILE
+  echo "write /sys/block/sdb/queue/scheduler deadline"  >> $CONFIGFILE
+  echo "write /sys/block/sdc/queue/scheduler deadline"  >> $CONFIGFILE
+  echo "write /sys/block/sdd/queue/scheduler deadline"  >> $CONFIGFILE
+  echo "write /sys/block/sde/queue/scheduler deadline"  >> $CONFIGFILE
+  echo "write /sys/block/sdf/queue/scheduler deadline"  >> $CONFIGFILE
 elif [ $SCHED = 3 ]; then
   echo "write /sys/block/dm-0/queue/scheduler fiops"  >> $CONFIGFILE
   echo "write /sys/block/sda/queue/scheduler fiops"  >> $CONFIGFILE
+  echo "write /sys/block/sdb/queue/scheduler fiops"  >> $CONFIGFILE
+  echo "write /sys/block/sdc/queue/scheduler fiops"  >> $CONFIGFILE
+  echo "write /sys/block/sdd/queue/scheduler fiops"  >> $CONFIGFILE
+  echo "write /sys/block/sde/queue/scheduler fiops"  >> $CONFIGFILE
+  echo "write /sys/block/sdf/queue/scheduler fiops"  >> $CONFIGFILE
 elif [ $SCHED = 4 ]; then
   echo "write /sys/block/dm-0/queue/scheduler sio"  >> $CONFIGFILE
   echo "write /sys/block/sda/queue/scheduler sio"  >> $CONFIGFILE
+  echo "write /sys/block/sdb/queue/scheduler sio"  >> $CONFIGFILE
+  echo "write /sys/block/sdc/queue/scheduler sio"  >> $CONFIGFILE
+  echo "write /sys/block/sdd/queue/scheduler sio"  >> $CONFIGFILE
+  echo "write /sys/block/sde/queue/scheduler sio"  >> $CONFIGFILE
+  echo "write /sys/block/sdf/queue/scheduler sio"  >> $CONFIGFILE
 elif [ $SCHED = 5 ]; then
   echo "write /sys/block/dm-0/queue/scheduler bfq"  >> $CONFIGFILE
   echo "write /sys/block/sda/queue/scheduler bfq"  >> $CONFIGFILE
+  echo "write /sys/block/sdb/queue/scheduler bfq"  >> $CONFIGFILE
+  echo "write /sys/block/sdc/queue/scheduler bfq"  >> $CONFIGFILE
+  echo "write /sys/block/sdd/queue/scheduler bfq"  >> $CONFIGFILE
+  echo "write /sys/block/sde/queue/scheduler bfq"  >> $CONFIGFILE
+  echo "write /sys/block/sdf/queue/scheduler bfq"  >> $CONFIGFILE
 elif [ $SCHED = 6 ]; then
   echo "write /sys/block/dm-0/queue/scheduler noop"  >> $CONFIGFILE
   echo "write /sys/block/sda/queue/scheduler noop"  >> $CONFIGFILE
+  echo "write /sys/block/sdb/queue/scheduler noop"  >> $CONFIGFILE
+  echo "write /sys/block/sdc/queue/scheduler noop"  >> $CONFIGFILE
+  echo "write /sys/block/sdd/queue/scheduler noop"  >> $CONFIGFILE
+  echo "write /sys/block/sde/queue/scheduler noop"  >> $CONFIGFILE
+  echo "write /sys/block/sdf/queue/scheduler noop"  >> $CONFIGFILE
 elif [ $SCHED = 7 ]; then
   echo "write /sys/block/dm-0/queue/scheduler zen"  >> $CONFIGFILE
   echo "write /sys/block/sda/queue/scheduler zen"  >> $CONFIGFILE
+  echo "write /sys/block/sdb/queue/scheduler zen"  >> $CONFIGFILE
+  echo "write /sys/block/sdc/queue/scheduler zen"  >> $CONFIGFILE
+  echo "write /sys/block/sdd/queue/scheduler zen"  >> $CONFIGFILE
+  echo "write /sys/block/sde/queue/scheduler zen"  >> $CONFIGFILE
+  echo "write /sys/block/sdf/queue/scheduler zen"  >> $CONFIGFILE
 fi
 
-# set readahead to 128
-echo "write /sys/block/sda/queue/read_ahead_kb 128" >> $CONFIGFILE
+# set readahead to 64
+# With SSD, there are no mechanical rotational latency issues so the SSD storage uses a small 4k read-ahead. but i will set 64 for now.
+echo "write /sys/block/dm-0/queue/read_ahead_kb 64" >> $CONFIGFILE
+echo "write /sys/block/sda/queue/read_ahead_kb 64" >> $CONFIGFILE
+echo "write /sys/block/sdb/queue/read_ahead_kb 64" >> $CONFIGFILE
+echo "write /sys/block/sdc/queue/read_ahead_kb 64" >> $CONFIGFILE
+echo "write /sys/block/sdd/queue/read_ahead_kb 64" >> $CONFIGFILE
+echo "write /sys/block/sde/queue/read_ahead_kb 64" >> $CONFIGFILE
+echo "write /sys/block/sdf/queue/read_ahead_kb 64" >> $CONFIGFILE
 
 # reinstall options
 echo -e "##### Reinstall Options #####" > $BACKUP

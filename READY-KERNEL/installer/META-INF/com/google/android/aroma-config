@@ -63,11 +63,11 @@ selectbox(
   "Select i/o scheduler","",2,
   "CFQ","(stock)",0,
   "deadline","",0,
-  "FIOPS","(default)",1,
+  "FIOPS","",0,
   "SIO","",0,
   "BFQ","",0,
   "noop","",0,
-  "zen","",0
+  "zen","",1
 );
 
 checkbox(
@@ -83,9 +83,9 @@ checkbox(
 
 selectbox(
   "\nSweep2Sleep","<@center><b>\nSweep across navbar area to put phone to sleep</b>\n\n</@>","","s2s.prop",
-  "Disable Sweep2Sleep","",0,
+  "Disable Sweep2Sleep","",1,
   "Sweep right","",0,
-  "Sweep left","(default)",1,
+  "Sweep left","",0,
   "Sweep left or right","",0
 );
 
