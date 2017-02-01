@@ -1340,6 +1340,10 @@ static const struct nl80211_vendor_cmd_info wlan_hdd_cfg80211_vendor_events[] =
         .vendor_id = QCA_NL80211_VENDOR_ID,
         .subcmd = QCA_NL80211_VENDOR_SUBCMD_MONITOR_RSSI
     },
+    [QCA_NL80211_VENDOR_SUBCMD_PWR_SAVE_FAIL_DETECTED_INDEX] = {
+        .vendor_id = QCA_NL80211_VENDOR_ID,
+        .subcmd = QCA_NL80211_VENDOR_SUBCMD_CHIP_PWRSAVE_FAILURE
+    }
 };
 
 /**
@@ -8306,6 +8310,70 @@ void wlan_hdd_cfg80211_acs_ch_select_evt(hdd_adapter_t *adapter)
 		clear_bit(ACS_PENDING, &con_sap_adapter->event_flags);
 	}
 
+	return;
+}
+
+#define PWR_SAVE_FAIL_CMD_INDEX \
+	QCA_NL80211_VENDOR_SUBCMD_PWR_SAVE_FAIL_DETECTED_INDEX
+/**
+ * hdd_chip_pwr_save_fail_detected() - chip power save failure detected
+ * NL event
+ * @hddctx: HDD context
+ * @data: chip power save failure detected
+ *
+ * This function reads the chip power save failure detected data and fill in
+ * the skb with NL attributes and send up the NL event.
+ * This callback execute in atomic context and must not invoke any
+ * blocking calls.
+ *
+ * Return: none
+ */
+void hdd_chip_pwr_save_fail_detected_cb(void *hddctx,
+					struct chip_pwr_save_fail_detected_params
+					*data)
+{
+	hdd_context_t *hdd_ctx  = hddctx;
+	struct sk_buff *skb;
+	int flags = vos_get_gfp_flags();
+
+	ENTER();
+
+	if (wlan_hdd_validate_context(hdd_ctx))
+		return;
+
+	if (!data) {
+		hddLog(LOGE, FL("data is null"));
+		return;
+	}
+
+	skb = cfg80211_vendor_event_alloc(hdd_ctx->wiphy,
+				  NULL,
+				  NLMSG_HDRLEN +
+				  sizeof(data-> failure_reason_code) +
+				  NLMSG_HDRLEN,
+				  PWR_SAVE_FAIL_CMD_INDEX,
+				  flags);
+
+	if (!skb) {
+		hddLog(LOGE, FL("cfg80211_vendor_event_alloc failed"));
+		return;
+	}
+
+	hddLog(LOG1, "failure reason code: %u, wake lock bitmap [0]: %u,wake lock bitmap[1] : %u wake lock bitmap [2]: %u wake lock bitmap [3]: %u",
+			data->failure_reason_code, data->wake_lock_bitmap[0],
+			data->wake_lock_bitmap[1], data->wake_lock_bitmap[2],
+			data->wake_lock_bitmap[3]);
+
+	if (nla_put_u32(skb,
+		QCA_ATTR_CHIP_POWER_SAVE_FAILURE_REASON,
+		data->failure_reason_code))
+		goto fail;
+
+	cfg80211_vendor_event(skb, flags);
+	return;
+
+fail:
+	kfree_skb(skb);
 	return;
 }
 
