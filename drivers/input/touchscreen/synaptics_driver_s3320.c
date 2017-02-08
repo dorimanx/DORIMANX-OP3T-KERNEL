@@ -1296,9 +1296,6 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 	if((gesture == DouTap && DouTap_gesture)||(gesture == RightVee && RightVee_gesture)\
         ||(gesture == LeftVee && LeftVee_gesture)||(gesture == UpVee && UpVee_gesture)\
         ||(gesture == Circle && Circle_gesture)||(gesture == DouSwip && DouSwip_gesture)){
-		if (DisableGestureHaptic)
-			qpnp_hap_ignore_next_request();
-		
 #ifdef WAKE_GESTURES
 		if (!dt2w_switch && s2w_switch && gesture == DouTap)
 			return;
@@ -1308,6 +1305,9 @@ static void gesture_judge(struct synaptics_ts_data *ts)
 		input_sync(ts->input_dev);
 		input_report_key(ts->input_dev, keyCode, 0);
 		input_sync(ts->input_dev);
+		
+		if (DisableGestureHaptic)
+			qpnp_hap_ignore_next_request();
 	}else{
 
 		ret = i2c_smbus_read_i2c_block_data( ts->client, F12_2D_CTRL20, 3, &(reportbuf[0x0]) );
