@@ -157,7 +157,7 @@ static int dev_mkdir(const char *name, umode_t mode)
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
 
-	err = vfs_mkdir(path.dentry->d_inode, dentry, mode);
+	err = vfs_mkdir2(path.mnt, path.dentry->d_inode, dentry, mode);
 	if (!err)
 		/* mark as kernel-created inode */
 		dentry->d_inode->i_private = &thread;
@@ -207,7 +207,7 @@ static int handle_create(const char *nodename, umode_t mode, kuid_t uid,
 	if (IS_ERR(dentry))
 		return PTR_ERR(dentry);
 
-	err = vfs_mknod(path.dentry->d_inode, dentry, mode, dev->devt);
+	err = vfs_mknod2(path.mnt, path.dentry->d_inode, dentry, mode, dev->devt);
 	if (!err) {
 		struct iattr newattrs;
 
@@ -216,7 +216,7 @@ static int handle_create(const char *nodename, umode_t mode, kuid_t uid,
 		newattrs.ia_gid = gid;
 		newattrs.ia_valid = ATTR_MODE|ATTR_UID|ATTR_GID;
 		mutex_lock(&dentry->d_inode->i_mutex);
-		notify_change(dentry, &newattrs, NULL);
+		notify_change2(path.mnt, dentry, &newattrs, NULL);
 		mutex_unlock(&dentry->d_inode->i_mutex);
 
 		/* mark as kernel-created inode */
@@ -237,7 +237,7 @@ static int dev_rmdir(const char *name)
 		return PTR_ERR(dentry);
 	if (dentry->d_inode) {
 		if (dentry->d_inode->i_private == &thread)
-			err = vfs_rmdir(parent.dentry->d_inode, dentry);
+			err = vfs_rmdir2(parent.mnt, parent.dentry->d_inode, dentry);
 		else
 			err = -EPERM;
 	} else {
@@ -322,9 +322,9 @@ static int handle_remove(const char *nodename, struct device *dev)
 			newattrs.ia_valid =
 				ATTR_UID|ATTR_GID|ATTR_MODE;
 			mutex_lock(&dentry->d_inode->i_mutex);
-			notify_change(dentry, &newattrs, NULL);
+			notify_change2(p.mnt, dentry, &newattrs, NULL);
 			mutex_unlock(&dentry->d_inode->i_mutex);
-			err = vfs_unlink(parent.dentry->d_inode, dentry, NULL);
+			err = vfs_unlink2(parent.mnt, parent.dentry->d_inode, dentry, NULL);
 			if (!err || err == -ENOENT)
 				deleted = 1;
 		}
