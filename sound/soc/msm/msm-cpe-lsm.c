@@ -2584,7 +2584,8 @@ static int msm_cpe_lsm_ioctl_compat(struct snd_pcm_substream *substream,
 			dev_err(rtd->dev,
 				"%s: %s: No Param data to set\n",
 				__func__, "SET_MODULE_PARAMS_32");
-			return -EINVAL;
+			err = -EINVAL;
+			goto done;
 		}
 
 		if (copy_from_user(&p_data_32, arg,
