@@ -583,28 +583,28 @@ static int nqx_probe(struct i2c_client *client,
 	if (client->dev.coherent_dma_mask == 0)
 		client->dev.coherent_dma_mask = ULONG_MAX;
 
-		nqx_dev->nfc_dma_pool = NULL;
-		nqx_dev->dma_virtual_addr = NULL;
+	nqx_dev->nfc_dma_pool = NULL;
+	nqx_dev->dma_virtual_addr = NULL;
 
-		nqx_dev->nfc_dma_pool = dma_pool_create(
-				"NFC-DMA", &client->dev,
-				MAX_BUFFER_SIZE, 64, 4096);
-		if (!nqx_dev->nfc_dma_pool) {
-				dev_err(&client->dev,
-				"nfc-nci probe: failed to allocate memory for dma_pool\n");
-				r = -ENOMEM;
-				goto err_free_dev;
-		}
+	nqx_dev->nfc_dma_pool = dma_pool_create(
+			"NFC-DMA", &client->dev,
+			MAX_BUFFER_SIZE, 64, 4096);
+	if (!nqx_dev->nfc_dma_pool) {
+			dev_err(&client->dev,
+			"nfc-nci probe: failed to allocate memory for dma_pool\n");
+			r = -ENOMEM;
+			goto err_free_dev;
+	}
 
-		nqx_dev->dma_virtual_addr = dma_pool_alloc(
-				nqx_dev->nfc_dma_pool, GFP_KERNEL,
-				&nqx_dev->dma_handle_physical_addr);
-		if (!nqx_dev->dma_virtual_addr) {
-				dev_err(&client->dev,
-				"nfc-nci probe: failed to allocate coherent memory for i2c dma buffer\n");
-				r = -ENOMEM;
-				goto err_free_dev;
-		}
+	nqx_dev->dma_virtual_addr = dma_pool_alloc(
+			nqx_dev->nfc_dma_pool, GFP_KERNEL,
+			&nqx_dev->dma_handle_physical_addr);
+	if (!nqx_dev->dma_virtual_addr) {
+			dev_err(&client->dev,
+			"nfc-nci probe: failed to allocate coherent memory for i2c dma buffer\n");
+			r = -ENOMEM;
+			goto err_free_dev;
+	}
 
 	if (gpio_is_valid(platform_data->en_gpio)) {
 		r = gpio_request(platform_data->en_gpio, "nfc_reset_gpio");
