@@ -1,0 +1,7 @@
+/* Generated automatically. */
+static const char configuration_arguments[] = "/android_kernel/crosstool-ng/.build/src/gcc-6.3.0/configure --build=x86_64-build_pc-linux-gnu --host=x86_64-build_pc-linux-gnu --target=aarch64-OP3T-linux-gnueabi --prefix=/android_kernel/crosstool-ng/builds/aarch64-OP3T-linux-gnueabi --with-sysroot=/android_kernel/crosstool-ng/builds/aarch64-OP3T-linux-gnueabi/aarch64-OP3T-linux-gnueabi/sysroot --enable-languages=c --with-pkgversion='crosstool-NG crosstool-ng-1.22.0-583-gfbc69323 - PWR-CORE' --enable-__cxa_atexit --disable-libmudflap --disable-libgomp --disable-libssp --disable-libquadmath --disable-libquadmath-support --disable-libsanitizer --disable-libmpx --with-gmp=/android_kernel/crosstool-ng/.build/aarch64-OP3T-linux-gnueabi/buildtools --with-mpfr=/android_kernel/crosstool-ng/.build/aarch64-OP3T-linux-gnueabi/buildtools --with-mpc=/android_kernel/crosstool-ng/.build/aarch64-OP3T-linux-gnueabi/buildtools --with-isl=/android_kernel/crosstool-ng/.build/aarch64-OP3T-linux-gnueabi/buildtools --enable-lto --with-host-libstdcxx='-static-libgcc -Wl,-Bstatic,-lstdc++,-Bdynamic -lm' --enable-threads=posix --enable-plugin --disable-nls --disable-multilib --with-local-prefix=/android_kernel/crosstool-ng/builds/aarch64-OP3T-linux-gnueabi/aarch64-OP3T-linux-gnueabi/sysroot --enable-long-long";
+static const char thread_model[] = "posix";
+
+static const struct {
+  const char *name, *value;
+} configure_default_options[] = { { NULL, NULL} };
