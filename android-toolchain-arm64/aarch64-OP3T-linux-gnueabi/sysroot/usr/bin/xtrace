@@ -60,7 +60,7 @@ short options.
 }
 
 do_version() {
-  echo 'xtrace (crosstool-NG crosstool-ng-1.22.0-583-gfbc69323 - PWR-CORE) 2.25'
+  echo 'xtrace (crosstool-NG crosstool-ng-1.22.0-587-g2d1b469f - PWR-CORE) 2.25'
   printf $"Copyright (C) %s Free Software Foundation, Inc.
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
