@@ -344,6 +344,7 @@ static void disable_unprepare_rcg_srcs(struct clk *c, struct clk *curr,
 	if (c->prepare_count)
 		clk_unprepare(curr);
 }
+
 static int rcg_clk_set_rate(struct clk *c, unsigned long rate)
 {
 	struct clk_freq_tbl *cf, *nf;
@@ -403,11 +404,12 @@ static int rcg_clk_set_rate(struct clk *c, unsigned long rate)
 	 */
 	rcg->current_freq = nf;
 	c->parent = nf->src_clk;
+
 	if (rcg->non_local_control_timeout)
 		disable_unprepare_rcg_srcs(c, cf->src_clk, nf->src_clk,
 								&flags);
 	else
-	    __clk_post_reparent(c, cf->src_clk, &flags);
+		__clk_post_reparent(c, cf->src_clk, &flags);
 
 	return 0;
 }

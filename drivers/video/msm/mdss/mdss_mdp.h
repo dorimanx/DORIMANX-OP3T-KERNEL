@@ -569,6 +569,9 @@ struct mdss_mdp_ctl {
 
 	/* vsync handler for FRC */
 	struct mdss_mdp_vsync_handler frc_vsync_handler;
+
+	/* dynamic resolution switch during cont-splash handoff */
+	bool switch_with_handoff;
 };
 
 struct mdss_mdp_mixer {
@@ -1416,6 +1419,20 @@ static inline bool mdss_mdp_is_lineptr_supported(struct mdss_mdp_ctl *ctl)
 
 	return (ctl->is_video_mode || ((pinfo->type == MIPI_CMD_PANEL)
 			&& (pinfo->te.tear_check_en)) ? true : false);
+}
+
+static inline bool mdss_mdp_is_map_needed(struct mdss_data_type *mdata,
+						struct mdss_mdp_img_data *data)
+{
+	u32 is_secure_ui = data->flags & MDP_SECURE_DISPLAY_OVERLAY_SESSION;
+
+     /*
+      * For ULT Targets we need SMMU Map, to issue map call for secure Display.
+      */
+	if (is_secure_ui && !mdss_has_quirk(mdata, MDSS_QUIRK_NEED_SECURE_MAP))
+		return false;
+
+	return true;
 }
 
 irqreturn_t mdss_mdp_isr(int irq, void *ptr);
