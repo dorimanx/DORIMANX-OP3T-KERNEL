@@ -4571,21 +4571,6 @@ static int synaptics_mode_change(int mode)
 		TPD_ERR("%s: set dose mode[0x%x] err!!\n", __func__,tmp_mode);
 	return ret;
 }
-
-static void set_fingerprintd_nice(int nice)
-{
-	struct task_struct *p;
-
-	read_lock(&tasklist_lock);
-	for_each_process(p) {
-		if (!memcmp(p->comm, "fingerprintd", 13)) {
-			set_user_nice(p, nice);
-			break;
-		}
-	}
-	read_unlock(&tasklist_lock);
-}
-
 #if defined(CONFIG_FB)
 static int fb_notifier_callback(struct notifier_block *self, unsigned long event, void *data)
 {
@@ -4614,7 +4599,6 @@ static int fb_notifier_callback(struct notifier_block *self, unsigned long event
 				synaptics_ts_resume(&ts->client->dev);
                 //atomic_set(&ts->is_stop,0);
                 TPD_DEBUG("%s going TP resume end\n", __func__);
-				set_fingerprintd_nice(0);
             }
 		}else if( *blank == FB_BLANK_POWERDOWN && (event == FB_EARLY_EVENT_BLANK ))
 		{
@@ -4628,8 +4612,6 @@ static int fb_notifier_callback(struct notifier_block *self, unsigned long event
 				}
                 synaptics_ts_suspend(&ts->client->dev);
 				TPD_DEBUG("%s : going TP suspend end\n", __func__);
-				set_fingerprintd_nice(MIN_NICE);
-				
             }
 		}
 	}
