@@ -58,7 +58,7 @@
 #include <linux/workqueue.h>
 #include <linux/notifier.h>
 #include <linux/kobject.h>
-#include <linux/lcd_notify.h>
+#include <linux/fb.h>
 #include <linux/boeffla_touchkey_control.h>
 
 
@@ -72,7 +72,7 @@ int btkc_timeout = TIMEOUT_DEFAULT;	// default is rom controlled timeout
 int isScreenTouched = 0;
 int cacheBrightness = BRIGHTNESS_DEFAULT;
 
-static struct notifier_block lcd_notif;
+static struct notifier_block fb_notif;
 
 static void led_work_func(struct work_struct *unused);
 static DECLARE_DELAYED_WORK(led_work, led_work_func);
@@ -92,24 +92,33 @@ static void led_work_func(struct work_struct *unused)
 }
 
 
-static int lcd_notifier_callback(struct notifier_block *this,
-								unsigned long event, void *data)
+static int fb_notifier_callback(struct notifier_block *this,
+				 unsigned long event, void *data)
 {
-	switch (event)
-	{
-		case LCD_EVENT_OFF_START:
-			pr_debug("Boeffla touch key control: screen off detected, disable touchkey led");
-			
-			// switch off LED and cancel any scheduled work
-			qpnp_boeffla_set_button_backlight(BRIGHTNESS_OFF);
-			cancel_delayed_work(&led_work);
-			break;
+	struct fb_event *evdata = data;
+	int *blank;
 
-		default:
-			break;
+	if (evdata && evdata->data && event == FB_EVENT_BLANK) {
+		blank = evdata->data;
+		switch (*blank) {
+			case FB_BLANK_UNBLANK:
+				//display on
+				break;
+			case FB_BLANK_POWERDOWN:
+			case FB_BLANK_HSYNC_SUSPEND:
+			case FB_BLANK_VSYNC_SUSPEND:
+			case FB_BLANK_NORMAL:
+				//display off
+				pr_debug("Boeffla touch key control: screen off detected, disable touchkey led");
+			
+				// switch off LED and cancel any scheduled work
+				qpnp_boeffla_set_button_backlight(BRIGHTNESS_OFF);
+				cancel_delayed_work(&led_work);
+				break;
+		}
 	}
 
-	return 0;
+	return NOTIFY_OK;
 }
 
 
@@ -308,9 +317,9 @@ static int btk_control_init(void)
 	}
 
 	// register callback for screen on/off notifier
-	lcd_notif.notifier_call = lcd_notifier_callback;
-	if (lcd_register_client(&lcd_notif) != 0)
-		pr_err("%s: Failed to register lcd callback\n", __func__);
+	fb_notif.notifier_call = fb_notifier_callback;
+	if (fb_register_client(&fb_notif) != 0)
+		pr_err("%s: Failed to register fb callback\n", __func__);
 
 	// Print debug info
 	printk("Boeffla touch key control: driver version %s started\n", BTK_CONTROL_VERSION);
@@ -329,7 +338,7 @@ static void btk_control_exit(void)
 	flush_scheduled_work();
 
 	// unregister screen notifier
-	lcd_unregister_client(&lcd_notif);
+	fb_unregister_client(&fb_notif);
 
 	// Print debug info
 	printk("Boeffla touch key control: driver stopped\n");
