@@ -125,13 +125,18 @@ fi
 
 # set readahead to 64
 # With SSD, there are no mechanical rotational latency issues so the SSD storage uses a small 4k read-ahead. but i will set 64 for now.
-echo "write /sys/block/dm-0/queue/read_ahead_kb 64" >> $CONFIGFILE
 echo "write /sys/block/sda/queue/read_ahead_kb 64" >> $CONFIGFILE
 echo "write /sys/block/sdb/queue/read_ahead_kb 64" >> $CONFIGFILE
 echo "write /sys/block/sdc/queue/read_ahead_kb 64" >> $CONFIGFILE
 echo "write /sys/block/sdd/queue/read_ahead_kb 64" >> $CONFIGFILE
 echo "write /sys/block/sde/queue/read_ahead_kb 64" >> $CONFIGFILE
 echo "write /sys/block/sdf/queue/read_ahead_kb 64" >> $CONFIGFILE
+
+# Set Big Cluster Cores to Conservative Gov
+echo "write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor conservative" >> $CONFIGFILE
+
+# Set BackLight touch keys timeout to 8sec (default 3)
+echo "write /sys/class/misc/btk_control/btkc_timeout 8000" >> $CONFIGFILE
 
 # reinstall options
 echo -e "##### Reinstall Options #####" > $BACKUP

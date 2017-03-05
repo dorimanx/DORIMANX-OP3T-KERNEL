@@ -20,10 +20,10 @@
 # https://github.com/flar2/android_kernel_oneplus_msm8996
 
 ini_set("rom_name",             "Dorimanx-PWR-CORE");
-ini_set("rom_version",          "0.1");
+ini_set("rom_version",          "Build Ver See File.");
 ini_set("rom_author",           "Dorimanx");
 ini_set("rom_device",           "OnePlus 3T");
-ini_set("rom_date",             "JAN 19, 2017");
+ini_set("rom_date",             "Build Date See File.");
 
 ini_set("force_colorspace","rgba");
 
@@ -60,25 +60,25 @@ agreebox(
 selectbox(
   "\nDisk Settings","\n\n\n\n","","disk.prop",
 
-  "Select i/o scheduler","",2,
+  "Select I/O scheduler","",2,
   "CFQ","(stock)",0,
-  "deadline","",0,
+  "Deadline","",0,
   "FIOPS","",0,
   "SIO","",0,
   "BFQ","",0,
-  "noop","",0,
-  "zen","",1
+  "Noop","",0,
+  "Zen","",1
 );
 
 checkbox(
   "\nWake Gestures","<@center><b>\nSelect the screen gestures you would like to use</b>\n\n</@>","","gest.prop",
   
   "Wake Gestures","<b>Sweep or double tap to wake up phone</b>",2,
-  "Sweep right","",0,
-  "Sweep left","",0,
-  "Sweep up","",0,
-  "Sweep down","",0,
-  "Double tap","",0
+  "Sweep right","",1,
+  "Sweep left","",1,
+  "Sweep up","",1,
+  "Sweep down","",1,
+  "Double tap","",1
 );
 
 selectbox(
@@ -92,7 +92,7 @@ selectbox(
 checkbox(
   "\nOther settings","<@center><b>\nSelect the mods you want to install</b>\n\n</@>","","mods.prop",
   "Disable fsync","Faster fileystem performance, with risk of data loss",0,
-  "Backlight dimmer","Lower screen brightness",0
+  "Backlight dimmer","Lower screen brightness",1
 );
 
 menubox(
