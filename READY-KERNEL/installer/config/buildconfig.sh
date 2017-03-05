@@ -123,20 +123,26 @@ elif [ $SCHED = 7 ]; then
   echo "write /sys/block/sdf/queue/scheduler zen"  >> $CONFIGFILE
 fi
 
-# set readahead to 64
-# With SSD, there are no mechanical rotational latency issues so the SSD storage uses a small 4k read-ahead. but i will set 64 for now.
-echo "write /sys/block/sda/queue/read_ahead_kb 64" >> $CONFIGFILE
-echo "write /sys/block/sdb/queue/read_ahead_kb 64" >> $CONFIGFILE
-echo "write /sys/block/sdc/queue/read_ahead_kb 64" >> $CONFIGFILE
-echo "write /sys/block/sdd/queue/read_ahead_kb 64" >> $CONFIGFILE
-echo "write /sys/block/sde/queue/read_ahead_kb 64" >> $CONFIGFILE
-echo "write /sys/block/sdf/queue/read_ahead_kb 64" >> $CONFIGFILE
+# set readahead to 128
+# With SSD, there are no mechanical rotational latency issues so the SSD storage uses a small 4k read-ahead. but i will set 128 for now.
+echo "write /sys/block/sda/queue/read_ahead_kb 128" >> $CONFIGFILE
+echo "write /sys/block/sdb/queue/read_ahead_kb 128" >> $CONFIGFILE
+echo "write /sys/block/sdc/queue/read_ahead_kb 128" >> $CONFIGFILE
+echo "write /sys/block/sdd/queue/read_ahead_kb 128" >> $CONFIGFILE
+echo "write /sys/block/sde/queue/read_ahead_kb 128" >> $CONFIGFILE
+echo "write /sys/block/sdf/queue/read_ahead_kb 128" >> $CONFIGFILE
 
-# Set Big Cluster Cores to Conservative Gov
-echo "write /sys/devices/system/cpu/cpu2/cpufreq/scaling_governor conservative" >> $CONFIGFILE
+# Set BackLight touch keys timeout to 8sec (default 2)
+echo "write /sys/class/misc/btk_control/btkc_mode 1" >> $CONFIGFILE
+echo "write /sys/class/misc/btk_control/btkc_timeout 6000" >> $CONFIGFILE
 
-# Set BackLight touch keys timeout to 8sec (default 3)
-echo "write /sys/class/misc/btk_control/btkc_timeout 8000" >> $CONFIGFILE
+# Enable force Fast Charge
+echo "write /sys/kernel/fast_charge/force_fast_charge 1" >> $CONFIGFILE
+
+# Disable IPA and WIFI wakelocks.
+echo "write /sys/module/wakeup/parameters/enable_ipa_ws N" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws N" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_wlan_extscan_wl_ws N" >> $CONFIGFILE
 
 # reinstall options
 echo -e "##### Reinstall Options #####" > $BACKUP
