@@ -28,7 +28,7 @@ if [ -e "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb ]; then
 fi;
 
 CHECK_ZIP=$(find READY-KERNEL/ -name *.zip | wc -l);
-if [ "$CHECK_ZIP" -eq "1" ]; then
+if [ "$CHECK_ZIP" -eq "2" ]; then
 	rm READY-KERNEL/*.zip;
 fi;
 
