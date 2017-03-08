@@ -289,7 +289,10 @@ struct f2fs_dir_entry *f2fs_find_entry(struct inode *dir,
 
 	err = fscrypt_setup_filename(dir, child, 1, &fname);
 	if (err) {
-		*res_page = ERR_PTR(err);
+		if (err == -ENOENT)
+			*res_page = NULL;
+		else
+			*res_page = ERR_PTR(err);
 		return NULL;
 	}
 	de = __f2fs_find_entry(dir, &fname, res_page, ci_name_buf);
