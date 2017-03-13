@@ -798,6 +798,8 @@ next_block:
 				}
 			} else {
 				err = __allocate_data_block(&dn);
+				if (!err)
+					set_inode_flag(inode, FI_APPEND_WRITE);
 			}
 			if (err)
 				goto sync_out;
@@ -1812,7 +1814,9 @@ static ssize_t f2fs_direct_IO(int rw, struct kiocb *iocb, struct iov_iter *iter,
 	up_read(&F2FS_I(inode)->dio_rwsem[rw]);
 
 	if (rw & WRITE) {
-		if (err < 0)
+		if (err > 0)
+			set_inode_flag(inode, FI_UPDATE_WRITE);
+		else if (err < 0)
 			f2fs_write_failed(mapping, offset + count);
 	}
 
