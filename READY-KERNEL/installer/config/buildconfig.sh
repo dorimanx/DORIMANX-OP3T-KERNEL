@@ -134,7 +134,7 @@ echo "write /sys/block/sdf/queue/read_ahead_kb 128" >> $CONFIGFILE
 
 # Set BackLight touch keys timeout to 8sec (default 2)
 echo "write /sys/class/misc/btk_control/btkc_mode 1" >> $CONFIGFILE
-echo "write /sys/class/misc/btk_control/btkc_timeout 6000" >> $CONFIGFILE
+echo "write /sys/class/misc/btk_control/btkc_timeout 5000" >> $CONFIGFILE
 
 # Enable force Fast Charge
 echo "write /sys/kernel/fast_charge/force_fast_charge 1" >> $CONFIGFILE
@@ -143,6 +143,9 @@ echo "write /sys/kernel/fast_charge/force_fast_charge 1" >> $CONFIGFILE
 echo "write /sys/module/wakeup/parameters/enable_ipa_ws N" >> $CONFIGFILE
 echo "write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws N" >> $CONFIGFILE
 echo "write /sys/module/wakeup/parameters/enable_wlan_extscan_wl_ws N" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_wlan_ws N" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_timerfd_ws N" >> $CONFIGFILE
+echo "write /sys/module/wakeup/parameters/enable_netlink_ws Y" >> $CONFIGFILE
 
 # reinstall options
 echo -e "##### Reinstall Options #####" > $BACKUP
