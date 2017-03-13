@@ -683,7 +683,7 @@ int __f2fs_add_link(struct inode *dir, const struct qstr *name,
 	 * consistency more.
 	 */
 	if (current != F2FS_I(dir)->task) {
-		de = __f2fs_find_entry(dir, &fname, &page);
+		de = __f2fs_find_entry(dir, &fname, &page, NULL);
 		F2FS_I(dir)->task = NULL;
 	}
 	if (de) {
