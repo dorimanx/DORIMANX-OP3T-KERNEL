@@ -43,6 +43,7 @@ static struct {
 
 static DEFINE_RAW_SPINLOCK(timekeeper_lock);
 static struct timekeeper shadow_timekeeper;
+static int timekeeping_state = 0;
 
 /**
  * struct tk_fast - NMI safe timekeeper
@@ -527,30 +528,6 @@ void getnstimeofday64(struct timespec64 *ts)
 	WARN_ON(__getnstimeofday64(ts));
 }
 EXPORT_SYMBOL(getnstimeofday64);
-
-ktime_t __ktime_get(void)
-{
-	struct timekeeper *tk = &tk_core.timekeeper;
-	unsigned int seq;
-	ktime_t base;
-	s64 nsecs;
-
-	do {
-		seq = read_seqcount_begin(&tk_core.seq);
-		base = tk->tkr.base_mono;
-		nsecs = timekeeping_get_ns(&tk->tkr);
-
-	} while (read_seqcount_retry(&tk_core.seq, seq));
-
-	return ktime_add_ns(base, nsecs);
-}
-EXPORT_SYMBOL_GPL(__ktime_get);
-ktime_t ktime_get(void)
-{
-    WARN_ON(timekeeping_suspended);
-    return __ktime_get();
-}
-EXPORT_SYMBOL_GPL(ktime_get);
 
 static ktime_t *offsets[TK_OFFS_MAX] = {
 	[TK_OFFS_REAL]	= &tk_core.timekeeper.offs_real,
@@ -1258,6 +1235,42 @@ static struct syscore_ops timekeeping_syscore_ops = {
 	.resume		= timekeeping_resume,
 	.suspend	= timekeeping_suspend,
 };
+
+ktime_t __ktime_get(void)
+{
+	struct timekeeper *tk = &tk_core.timekeeper;
+	unsigned int seq;
+	ktime_t base;
+	s64 nsecs;
+
+	do {
+		seq = read_seqcount_begin(&tk_core.seq);
+		base = tk->tkr.base_mono;
+		nsecs = timekeeping_get_ns(&tk->tkr);
+
+	} while (read_seqcount_retry(&tk_core.seq, seq));
+
+	if (timekeeping_state) {
+		timekeeping_suspend();
+		timekeeping_state = 0;
+	}
+
+	return ktime_add_ns(base, nsecs);
+}
+EXPORT_SYMBOL_GPL(__ktime_get);
+
+ktime_t ktime_get(void)
+{
+	if (timekeeping_suspended) {
+		timekeeping_resume();
+		timekeeping_state = 1;
+	}
+
+	WARN_ON(timekeeping_suspended);
+
+    return __ktime_get();
+}
+EXPORT_SYMBOL_GPL(ktime_get);
 
 static int __init timekeeping_init_ops(void)
 {
