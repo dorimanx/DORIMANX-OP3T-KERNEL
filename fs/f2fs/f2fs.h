@@ -246,7 +246,7 @@ enum {
 		((1 << (sbi)->log_blocks_per_seg) * (sbi)->segs_per_sec)
 #define DISCARD_ISSUE_RATE	8
 #define DEF_CP_INTERVAL			60	/* 60 secs */
-#define DEF_IDLE_INTERVAL		120	/* 2 mins */
+#define DEF_IDLE_INTERVAL		30	/* 30 secs */
 
 struct cp_control {
 	int reason;
