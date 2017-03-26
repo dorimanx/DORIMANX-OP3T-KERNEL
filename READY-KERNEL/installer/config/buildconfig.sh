@@ -22,6 +22,27 @@ if [ $BLDIM = 1 ]; then
   echo "write /sys/module/mdss_fb/parameters/backlight_dimmer 1" >> $CONFIGFILE
 fi
 
+# Tocuh Leds delay
+TLCTL=`grep "item.0.3" /tmp/aroma/mods.prop | cut -d '=' -f2`
+if [ $TLCTL = 1 ]; then
+  echo "write /sys/class/misc/btk_control/btkc_mode 1" >> $CONFIGFILE
+else
+  echo "write /sys/class/misc/btk_control/btkc_mode 0" >> $CONFIGFILE
+fi
+
+TLTIME1=`grep item.0.4 /tmp/aroma/mods.prop | cut -d '=' -f2`
+TLTIME2=`grep item.0.5 /tmp/aroma/mods.prop | cut -d '=' -f2`
+TLTIME3=`grep item.0.6 /tmp/aroma/mods.prop | cut -d '=' -f2`
+if [ $TLTIME1 = 1 ]; then
+  echo "write /sys/class/misc/btk_control/btkc_timeout 2000" >> $CONFIGFILE
+fi
+if [ $TLTIME2 = 1 ]; then
+  echo "write /sys/class/misc/btk_control/btkc_timeout 5000" >> $CONFIGFILE
+fi
+if [ $TLTIME3 = 1 ]; then
+  echo "write /sys/class/misc/btk_control/btkc_timeout 7000" >> $CONFIGFILE
+fi
+
 # S2W
 SR=`grep "item.1.1" /tmp/aroma/gest.prop | cut -d '=' -f2`
 SL=`grep "item.1.2" /tmp/aroma/gest.prop | cut -d '=' -f2`
@@ -41,7 +62,6 @@ fi
 S2W=$(( SL + SR + SU + SD ))
 echo "write /sys/android_touch/sweep2wake " $S2W >> $CONFIGFILE
 
-
 # DT2W
 DT2W=`grep "item.1.5" /tmp/aroma/gest.prop | cut -d '=' -f2`
 echo "write /sys/android_touch/doubletap2wake " $DT2W >> $CONFIGFILE
@@ -58,6 +78,35 @@ elif [ $S2S = 4 ]; then
 else
   echo "write /sys/sweep2sleep/sweep2sleep 0" >> $CONFIGFILE
 fi
+
+
+# Wakelocks
+WAKE1=`grep "item.0.1" /tmp/aroma/wakes.prop | cut -d '=' -f2`
+WAKE2=`grep "item.0.2" /tmp/aroma/wakes.prop | cut -d '=' -f2`
+WAKE3=`grep "item.0.3" /tmp/aroma/wakes.prop | cut -d '=' -f2`
+WAKE4=`grep "item.0.4" /tmp/aroma/wakes.prop | cut -d '=' -f2`
+WAKE5=`grep "item.0.5" /tmp/aroma/wakes.prop | cut -d '=' -f2`
+WAKE6=`grep "item.0.6" /tmp/aroma/wakes.prop | cut -d '=' -f2`
+
+if [ $WAKE1 = 1 ]; then
+  echo "write /sys/module/wakeup/parameters/enable_ipa_ws N" >> $CONFIGFILE
+fi
+if [ $WAKE2 = 1 ]; then
+  echo "write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws N" >> $CONFIGFILE
+fi
+if [ $WAKE3 = 1 ]; then
+  echo "write /sys/module/wakeup/parameters/enable_wlan_extscan_wl_ws N" >> $CONFIGFILE
+fi
+if [ $WAKE4 = 1 ]; then
+  echo "write /sys/module/wakeup/parameters/enable_wlan_ws N" >> $CONFIGFILE
+fi
+if [ $WAKE5 = 1 ]; then
+  echo "write /sys/module/wakeup/parameters/enable_timerfd_ws N" >> $CONFIGFILE
+fi
+if [ $WAKE6 = 1 ]; then
+  echo "write /sys/module/wakeup/parameters/enable_netlink_ws N" >> $CONFIGFILE
+fi
+
 
 echo "" >> $CONFIGFILE
 echo "on property:sys.boot_completed=1" >> $CONFIGFILE
@@ -132,20 +181,8 @@ echo "write /sys/block/sdd/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sde/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdf/queue/read_ahead_kb 128" >> $CONFIGFILE
 
-# Set BackLight touch keys timeout to 8sec (default 2)
-echo "write /sys/class/misc/btk_control/btkc_mode 1" >> $CONFIGFILE
-echo "write /sys/class/misc/btk_control/btkc_timeout 5000" >> $CONFIGFILE
-
 # Enable force Fast Charge
 echo "write /sys/kernel/fast_charge/force_fast_charge 1" >> $CONFIGFILE
-
-# Disable IPA and WIFI wakelocks.
-echo "write /sys/module/wakeup/parameters/enable_ipa_ws N" >> $CONFIGFILE
-echo "write /sys/module/wakeup/parameters/enable_qcom_rx_wakelock_ws N" >> $CONFIGFILE
-echo "write /sys/module/wakeup/parameters/enable_wlan_extscan_wl_ws N" >> $CONFIGFILE
-echo "write /sys/module/wakeup/parameters/enable_wlan_ws N" >> $CONFIGFILE
-echo "write /sys/module/wakeup/parameters/enable_timerfd_ws N" >> $CONFIGFILE
-echo "write /sys/module/wakeup/parameters/enable_netlink_ws Y" >> $CONFIGFILE
 
 # reinstall options
 echo -e "##### Reinstall Options #####" > $BACKUP

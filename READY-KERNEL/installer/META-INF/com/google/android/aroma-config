@@ -92,7 +92,21 @@ selectbox(
 checkbox(
   "\nOther settings","<@center><b>\nSelect the mods you want to install</b>\n\n</@>","","mods.prop",
   "Disable fsync","Faster fileystem performance, with risk of data loss",0,
-  "Backlight dimmer","Lower screen brightness",1
+  "Backlight dimmer","Lower screen brightness",1,
+  "Touch Keys Overide!","Allow Kernel to control touch keys leds delay,\nif unset, the timeout will be as ROM decide,\nPlease select ONE of the DELAYS.",1,
+  "Touch Keys LEDS Delay 2sec","Default LEDS delay 2sec",0,
+  "Touch Keys LEDS Delay 5sec","LEDs stay ON 5sec",1,
+  "Touch Keys LEDS Delay 7sec","LEDs stay ON 7sec",0
+);
+
+checkbox(
+  "\nWakelocks settings","<@center><b>\nSelect the wakelocks you like to disable!</b>\n\n</@>","","wakes.prop",
+  "IPA Wakelock","Disable the IPA wakelock on suspend",1,
+  "QCOM_RX Wakelock","Disable the QCOM_RX wakelock on suspend",1,
+  "WLAN_EXTSCAN Wakelock","Disable the WLAN_EXTSCAN wakelock on suspend",1,
+  "WLAN Wakelock","Disable the WIFI wakelock,\nmay brake NOTIFICATIONS! using WIFI",0,
+  "TIMERFD Wakelock","Disable the TIMERFD wakelock on suspend",1,
+  "NETLINK Wakelock","Disable the NETLINK wakelock on suspend,\nmay brake NOTIFICATIONS!",0
 );
 
 menubox(
