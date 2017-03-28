@@ -101,7 +101,7 @@ checkbox(
 
 checkbox(
   "\nWakelocks settings","<@center><b>\nSelect the wakelocks you like to disable!</b>\n\n</@>","","wakes.prop",
-  "IPA Wakelock","Disable the IPA wakelock on suspend",1,
+  "IPA Wakelock","Partially disable the IPA wakelock when screen off,\nIt's needed for BT music stream stability!.",1,
   "QCOM_RX Wakelock","Disable the QCOM_RX wakelock on suspend",1,
   "WLAN_EXTSCAN Wakelock","Disable the WLAN_EXTSCAN wakelock on suspend",1,
   "WLAN Wakelock","Disable the WIFI wakelock,\nmay brake NOTIFICATIONS! using WIFI",0,
