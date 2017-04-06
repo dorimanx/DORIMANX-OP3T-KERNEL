@@ -47,7 +47,7 @@ static int fb_notifier_callback(struct notifier_block *self,
 				break;
 		}
 	}
-	return 0;
+	return NOTIFY_OK;
 }
 
 static bool enable_qcom_rx_wakelock_ws = true;
