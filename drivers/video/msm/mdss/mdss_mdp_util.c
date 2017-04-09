@@ -585,14 +585,15 @@ static int mdss_mdp_get_ubwc_plane_size(struct mdss_mdp_format_params *fmt,
 {
 	int rc = 0;
 	struct mdss_data_type *mdata = mdss_mdp_get_mdata();
+	u32 format = fmt->format;
 
 	if (!mdss_mdp_is_ubwc_supported(mdata)) {
 		pr_err("ubwc format is not supported for format: %d\n",
-			fmt->format);
+			format);
 		return -EINVAL;
 	}
 
-	if (fmt->format == MDP_Y_CBCR_H2V2_UBWC) {
+	if (format == MDP_Y_CBCR_H2V2_UBWC) {
 		ps->num_planes = 4;
 		/* Y bitstream stride and plane size */
 		ps->ystride[0] = ALIGN(width, 128);
@@ -614,12 +615,12 @@ static int mdss_mdp_get_ubwc_plane_size(struct mdss_mdp_format_params *fmt,
 		ps->plane_size[3] = ALIGN(ps->ystride[3] *
 			ALIGN(DIV_ROUND_UP(height / 2, 8), 16), 4096);
 
-	} else if (fmt->format == MDP_RGBA_8888_UBWC ||
-		fmt->format == MDP_RGBX_8888_UBWC ||
-		fmt->format == MDP_RGB_565_UBWC) {
+	} else if (format == MDP_RGBA_8888_UBWC ||
+		format == MDP_RGBX_8888_UBWC ||
+		format == MDP_RGB_565_UBWC) {
 		uint32_t stride_alignment, bpp, aligned_bitstream_width;
 
-		if (fmt->format == MDP_RGB_565_UBWC) {
+		if (format == MDP_RGB_565_UBWC) {
 			stride_alignment = 128;
 			bpp = 2;
 		} else {
@@ -641,7 +642,7 @@ static int mdss_mdp_get_ubwc_plane_size(struct mdss_mdp_format_params *fmt,
 			ALIGN(DIV_ROUND_UP(height, 4), 16), 4096);
 	} else {
 		pr_err("%s: UBWC format not supported for fmt:%d\n",
-			__func__, fmt->format);
+			__func__, format);
 		rc = -EINVAL;
 	}
 
