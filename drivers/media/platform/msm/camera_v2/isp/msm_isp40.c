@@ -213,6 +213,7 @@ static int32_t msm_vfe40_init_qos_parms(struct vfe_device *vfe_dev,
 							vfebase + ds_regs[i]);
 				}
 			}
+
 		}
 		kfree(ds_settings);
 		kfree(ds_regs);
