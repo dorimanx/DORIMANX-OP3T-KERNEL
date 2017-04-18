@@ -1,5 +1,5 @@
 /* Script for ld -Ur: link w/out relocation, do create constructors */
-/* Copyright (C) 2014-2016 Free Software Foundation, Inc.
+/* Copyright (C) 2014-2017 Free Software Foundation, Inc.
    Copying and distribution of this script, with or without modification,
    are permitted in any medium without royalty provided the copyright
    notice and this notice are preserved.  */
@@ -115,7 +115,6 @@ SECTIONS
   .data1        0 : { *(.data1) }
   .bss          0 :
   {
-   *(.dynbss)
    *(.bss)
    *(COMMON)
    /* Align here to ensure that the .bss section occupies space up to
@@ -162,6 +161,7 @@ SECTIONS
   .debug_ranges   0 : { *(.debug_ranges) }
   /* DWARF Extension.  */
   .debug_macro    0 : { *(.debug_macro) }
+  .debug_addr     0 : { *(.debug_addr) }
   .gnu.attributes 0 : { KEEP (*(.gnu.attributes)) }
   .note.gnu.arm.ident 0 : { KEEP (*(.note.gnu.arm.ident)) }
 }
