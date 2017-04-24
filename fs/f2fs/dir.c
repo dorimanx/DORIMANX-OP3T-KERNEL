@@ -131,27 +131,9 @@ struct f2fs_dir_entry *find_target_dentry(struct fscrypt_name *fname,
 			continue;
 		}
 
-		if (de->hash_code != namehash)
-			goto not_match;
-
-		de_name.name = d->filename[bit_pos];
-		de_name.len = le16_to_cpu(de->name_len);
-
-#ifdef CONFIG_F2FS_FS_ENCRYPTION
-		if (unlikely(!name->name)) {
-			if (fname->usr_fname->name[0] == '_') {
-				if (de_name.len > 32 &&
-					!memcmp(de_name.name + ((de_name.len - 17) & ~15),
-						fname->crypto_buf.name + 8, 16))
-					goto found;
-				goto not_match;
-			}
-			name->name = fname->crypto_buf.name;
-			name->len = fname->crypto_buf.len;
-		}
-#endif
-		if (de_name.len == name->len &&
-				!memcmp(de_name.name, name->name, name->len))
+		if (de->hash_code == namehash &&
+		    fscrypt_match_name(fname, d->filename[bit_pos],
+				       le16_to_cpu(de->name_len)))
 			goto found;
 
 		else if (de_name.len == name->len && ci_name_buf != NULL &&
@@ -168,7 +150,6 @@ struct f2fs_dir_entry *find_target_dentry(struct fscrypt_name *fname,
 			}
 		}
 
-not_match:
 		if (max_slots && max_len > *max_slots)
 			*max_slots = max_len;
 		max_len = 0;
