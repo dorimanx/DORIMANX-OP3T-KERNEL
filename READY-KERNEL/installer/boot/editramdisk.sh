@@ -29,6 +29,10 @@ fi
 cp /tmp/modules.img /tmp/ramdisk/
 chmod 0644 /tmp/ramdisk/modules.img
 
+# Copy initd.sh to ramdisk root
+cp /tmp/initd.sh /tmp/ramdisk/
+chmod 0755 /tmp/ramdisk/initd.sh
+
 # mount modules image and reload modules
 # first cleanup init.qcom.rc
 if [ $(grep -c "rmmod wlan.ko" /tmp/ramdisk/init.qcom.rc) == 1 ]; then

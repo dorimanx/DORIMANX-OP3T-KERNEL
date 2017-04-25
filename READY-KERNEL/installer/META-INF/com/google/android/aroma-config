@@ -96,7 +96,8 @@ checkbox(
   "Touch Keys Overide!","Allow Kernel to control touch keys leds delay,\nif unset, the timeout will be as ROM decide,\nPlease select ONE of the DELAYS.",1,
   "Touch Keys LEDS Delay 2sec","Default LEDS delay 2sec",0,
   "Touch Keys LEDS Delay 5sec","LEDs stay ON 5sec",1,
-  "Touch Keys LEDS Delay 7sec","LEDs stay ON 7sec",0
+  "Touch Keys LEDS Delay 7sec","LEDs stay ON 7sec",0,
+  "INIT.D Scripts Support","To run your scripts on boot,\nPut them in /data/init.d/",0
 );
 
 checkbox(

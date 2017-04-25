@@ -107,9 +107,8 @@ if [ $WAKE6 = 1 ]; then
   echo "write /sys/module/wakeup/parameters/enable_netlink_ws N" >> $CONFIGFILE
 fi
 
-
 echo "" >> $CONFIGFILE
-echo "on property:sys.boot_completed=1" >> $CONFIGFILE
+echo "on post-fs-data" >> $CONFIGFILE
 echo "" >> $CONFIGFILE
 
 # i/o scheduler
@@ -180,6 +179,17 @@ echo "write /sys/block/sdc/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdd/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sde/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdf/queue/read_ahead_kb 128" >> $CONFIGFILE
+echo "write /sys/block/dm-0/queue/read_ahead_kb 128" >> $CONFIGFILE
+
+echo "" >> $CONFIGFILE
+echo "on property:sys.boot_completed=1" >> $CONFIGFILE
+
+#init.d support in /data/init.d/
+INITD_SET=`grep item.0.7 /tmp/aroma/mods.prop | cut -d '=' -f2`
+if [ $INITD_SET = 1 ]; then
+  echo "exec /system/xbin/busybox sh /initd.sh" >> $CONFIGFILE
+fi
+echo "" >> $CONFIGFILE
 
 # Enable force Fast Charge
 echo "write /sys/kernel/fast_charge/force_fast_charge 1" >> $CONFIGFILE
