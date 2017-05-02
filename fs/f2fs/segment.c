@@ -476,7 +476,7 @@ static int __submit_flush_wait(struct f2fs_sb_info *sbi,
 	struct bio *bio = f2fs_bio_alloc(0);
 	int ret;
 
-	bio->bi_rw = REQ_OP_WRITE;
+	bio->bi_rw = REQ_OP_WRITE | REQ_SYNC;
 	bio->bi_bdev = bdev;
 	ret = submit_bio_wait(WRITE_FLUSH, bio);
 	bio_put(bio);
