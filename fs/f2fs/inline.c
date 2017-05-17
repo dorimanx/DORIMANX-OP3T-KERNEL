@@ -303,7 +303,11 @@ struct f2fs_dir_entry *find_in_inline_dir(struct inode *dir,
 	inline_dentry = inline_data_addr(ipage);
 
 	make_dentry_ptr_inline(NULL, &d, inline_dentry);
+#ifdef F2FS_OPT3_OEM_MODS
 	de = find_target_dentry(fname, namehash, NULL, &d, NULL);
+#else
+	de = find_target_dentry(fname, namehash, NULL, &d);
+#endif
 	unlock_page(ipage);
 	if (de)
 		*res_page = ipage;

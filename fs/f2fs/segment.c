@@ -513,9 +513,11 @@ int f2fs_issue_flush(struct f2fs_sb_info *sbi)
 	if (test_opt(sbi, NOBARRIER))
 		return 0;
 
-	// cmd_control_info set as NULL from destroy_flush_cmd_control.
+#ifdef F2FS_OPT3_OEM_MODS
+	/* cmd_control_info set as NULL from destroy_flush_cmd_control. */
 	if (fcc == NULL)
 		return 0;
+#endif
 
 	if (!test_opt(sbi, FLUSH_MERGE)) {
 		ret = submit_flush_wait(sbi);
