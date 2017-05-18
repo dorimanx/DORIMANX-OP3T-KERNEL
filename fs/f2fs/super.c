@@ -1048,7 +1048,9 @@ static void default_options(struct f2fs_sb_info *sbi)
 	sbi->active_logs = NR_CURSEG_TYPE;
 
 	set_opt(sbi, BG_GC);
+#ifdef CONFIG_F2FS_DEFAULT_INLINE_XATTR
 	set_opt(sbi, INLINE_XATTR);
+#endif
 	set_opt(sbi, INLINE_DATA);
 #ifndef CONFIG_F2FS_DEFAULT_NOINLINE_DENTRY
 	set_opt(sbi, INLINE_DENTRY);
@@ -1065,9 +1067,6 @@ static void default_options(struct f2fs_sb_info *sbi)
 
 #ifdef CONFIG_F2FS_FS_XATTR
 	set_opt(sbi, XATTR_USER);
-#ifdef CONFIG_F2FS_DEFAULT_INLINE_XATTR
-	set_opt(sbi, INLINE_XATTR);
-#endif
 #endif
 #ifdef CONFIG_F2FS_FS_POSIX_ACL
 	set_opt(sbi, POSIX_ACL);
