@@ -16,7 +16,6 @@
 #include <linux/kthread.h>
 #include <linux/swap.h>
 #include <linux/timer.h>
-#include <linux/freezer.h>
 
 #include "f2fs.h"
 #include "segment.h"
@@ -1149,8 +1148,6 @@ static int issue_discard_thread(void *data)
 repeat:
 	if (kthread_should_stop())
 		return 0;
-
-	try_to_freeze();
 
 	__issue_discard_cmd(sbi, true);
 	__wait_discard_cmd(sbi, true);
