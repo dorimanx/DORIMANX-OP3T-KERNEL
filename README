@@ -2,40 +2,51 @@
 
 What Inside:
 
-*Kernel compiled with GCC 6.3.0 64Bit adapted for OP3T
-*Kernel includes all new security patches.
-*Kernel updated up to 3.18.48 build.
-*Kernel includes all original last 6.0.1 changes by OP3T Devs.
-*Kernel will charge faster from USB.
-*Kernel has swipe to wake features by @FLAR2 (up,down,right,left,and dual tap).
-*Kernel has support for screen color change app. (KCAL Interface).
-*Kernel has support for touch keys light delay, default 6sec. by @andip71
-*Kernel include all latest patches from Code Aurora source for 3.18.y
-*Kernel include IPA and WIFI wakelocks removed by @franciscofranco
-*Kernel include open source QUALCOMM Wi-Fi driver updated to max without debugs.
-*Kernel include advanced binder driver from main line 4.10.y kernel.
-*Kernel include latest F2FS driver for 3.18.y with fixes for speed and stability.
-*Kernel include ZEN,NOOP,BFQ,DEADLINE,CFQ,FIOPS,SIO I/O govs tuned for SSD.
-*Kernel includes Elementalx, Blu_active, Interactive, Conservative, Ondemand, Performance CPU GOVS.
-*Kernel support FSYNC mode for FS. (Off by default)
-*Kernel support Backlight Dimmer feature.
-*Kernel supports CPU OverClock/UnderClock for both clusters.
-*Kernel support thermal driver tuning, max heat for cores, default 70c.
-*Kernel includes advanced crypto drivers and latest qseecom decryption driver.
-*Kernel includes updated EXFAT and FUSE + NTFS drivers.
-*Kernel support for not forcing encryption.
-*Kernel includes support for CIFS driver.
-*Kernel includes fast finger print sensor mod when screen is off.
-*Kernel includes support for Haptic Feedback (vibrate) tuning (more/less)
-*Kernel includes massive code update for sound driver, and @FLAR2 sound/mic gain control interface.
-*Kernel include boost to I/O by mounting partitions with optimized flags, and updated MMC driver.
-*Kernel includes updated BT and NET/PPP/VPN/DATA drivers.
-*Kernel include mode to ignore home and touch keys when finger is pressed against the screen.
-*Kernel includes Aroma Installer for easy install with few simple changes that can be selected.
-*Kernel includes many patches to camera, GPU, and screen drivers.
-*Kernel has OTG enabled by default internally.
-*Kernel has Notification LED Control driver by @andip71
-
+Kernel support OOS/H2OS 3.5.x
+Kernel compiled with GCC 6.3.0 64Bit adapted for OP3T
+Kernel includes all new security patches.
+Kernel updated up to 3.18.54 build.
+Kernel includes all original last 6.0.1 changes by OP3T Devs.
+Kernel operate in 300HZ + all needed fixes to do that.
+Kernel has DASH charge and USB Fast Charge (USB mode up to 900mA with MTP on)
+Kernel has swipe to wake features by @FLAR2 (up,down,right,left,and dual tap).
+Kernel include Sweep2Sleep allows sweeping from right to left and backwards!
+on soft buttons to turn off the screen. by @FLAR2
+Kernel has support for screen color change app. (KCAL Interface).
+Kernel has support for touch keys light delay, default 6sec. by @andip71
+Kernel include KGSL fixes and reworked GPU driver (use 133MHz min freq to save juice, goes to idle @ 100MHz)
+Kernel include all latest patches from Code Aurora source for 3.18.y
+Kernel include Enhanced TCP methods
+Kernel include IPA/TIMERFD/WIFI/NETLINK wakelocks removal code by @franciscofranco
+Kernel include open source QUALCOMM Wi-Fi driver updated to max without debugs.
+Kernel include advanced binder driver from main line 4.10.y kernel.
+Kernel include CDROM emulation on mass_storage (compatible with DriveDroid 0.10.18+)
+Kernel include latest F2FS driver for 3.18.y with fixes for speed and stability.
+Kernel include ZEN,NOOP,BFQ,DEADLINE,CFQ,FIOPS,SIO I/O govs tuned for SSD.
+Kernel includes Elementalx, Blu_active, Interactive, Conservative, Ondemand, Performance CPU GOVS.
+Kernel support FSYNC mode for FS. (Off by default)
+Kernel includes ARM enhanced performance and battery patches
+Kernel support Backlight Dimmer feature.
+Kernel supports CPU OverClock/UnderClock for both clusters.
+Kernel support thermal driver tuning, max heat for cores, default 70c.
+Kernel includes advanced crypto drivers and latest qseecom decryption driver.
+Kernel includes updated EXFAT and FUSE + NTFS drivers.
+Kernel support for not forcing encryption.
+Kernel includes support for CIFS driver.
+Kernel includes fast finger print sensor mod when screen is off.
+Kernel includes support for Haptic Feedback (vibrate) tuning (more/less)
+Kernel includes massive code update for sound driver, and @FLAR2 sound/mic gain control interface.
+Kernel include boost to I/O by mounting partitions with optimized flags, and updated MMC driver.
+Kernel includes updated BT and NET/PPP/VPN/DATA drivers.
+Kernel include mode to ignore home and touch keys when finger is pressed against the screen.
+Kernel includes Aroma Installer for easy install with few simple changes that can be selected.
+Kernel includes many patches to camera, GPU, and screen drivers.
+Kernel has OTG enabled by default internally.
+Kernel has Notification LED Control driver by @andip71
+Kernel include usage of power efficient workqueues in many drivers by @franciscofranco
+Added Support For INIT.D Scripts, from kernel 0.5
+Kernel will switch to NOOP I/O Sched during screen Off time to save power. by @SultanXDA
+Kernel will boost CPU frequency when screen wakeup to improve user experience, by @SultanXDA
 
 
 
