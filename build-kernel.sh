@@ -28,7 +28,7 @@ if [ -e "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb ]; then
 fi;
 
 CHECK_ZIP=$(find READY-KERNEL/ -name *.zip | wc -l);
-if [ "$CHECK_ZIP" -eq "2" ]; then
+if [ "$CHECK_ZIP" -gt "0" ]; then
 	rm READY-KERNEL/*.zip;
 fi;
 
@@ -134,6 +134,11 @@ BUILD_NOW()
 		zip -r Kernel-"${GETVER}"-OP3T-"$(date +"[%H-%M]-[%d-%m]-PWR-CORE")".zip * >/dev/null
 		mv *.zip ../
 		cd $KERNELDIR;
+		echo "Cleaning";
+		rm "$KERNELDIR"/READY-KERNEL/Image.gz-dtb;
+		rm "$KERNELDIR"/READY-KERNEL/modules/*.ko;
+		rm "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb;
+		rm "$KERNELDIR"/READY-KERNEL/modules.img;
 		echo "All Done";
 	else
 		if [ "$PYTHON_WAS_3" -eq "1" ]; then
