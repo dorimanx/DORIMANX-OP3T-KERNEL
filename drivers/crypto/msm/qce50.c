@@ -2987,6 +2987,7 @@ static void qce_multireq_timeout(unsigned long data)
 	struct qce_device *pce_dev = (struct qce_device *)data;
 	int ret = 0;
 	int last_seq;
+	unsigned long flags;
 
 	last_seq = atomic_read(&pce_dev->bunch_cmd_seq);
 	if (last_seq == 0 ||
@@ -2996,10 +2997,11 @@ static void qce_multireq_timeout(unsigned long data)
 		return;
 	}
 	/* last bunch mode command time out */
+	local_irq_save(flags);
 	if (cmpxchg(&pce_dev->owner, QCE_OWNER_NONE, QCE_OWNER_TIMEOUT)
 							!= QCE_OWNER_NONE) {
 		mod_timer(&(pce_dev->timer), (jiffies + DELAY_IN_JIFFIES));
-		return;
+		goto out_irq_restore;
 	}
 	del_timer(&(pce_dev->timer));
 	pce_dev->mode = IN_INTERRUPT_MODE;
@@ -3011,6 +3013,9 @@ static void qce_multireq_timeout(unsigned long data)
 		pr_warn("pcedev %d: Failed to insert dummy req\n",
 				pce_dev->dev_no);
 	cmpxchg(&pce_dev->owner, QCE_OWNER_TIMEOUT, QCE_OWNER_NONE);
+out_irq_restore:
+	local_irq_restore(flags);
+	return;
 }
 
 void qce_get_driver_stats(void *handle)
