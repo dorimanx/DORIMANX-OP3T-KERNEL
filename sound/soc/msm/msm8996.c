@@ -1875,7 +1875,6 @@ err:
  }
 static int msm8996_quat_mi2s_snd_startup(struct snd_pcm_substream *substream)
 {
-	pr_debug("%s \n",__func__);
 	return msm8996_mi2s_snd_startup(substream, AFE_PORT_ID_QUATERNARY_MI2S_RX,
 					&msm_quat_mi2s_data);
 }
@@ -1919,10 +1918,8 @@ static void msm8996_mi2s_snd_shutdown(struct snd_pcm_substream *substream,
 static void msm8996_quat_mi2s_snd_shutdown(struct snd_pcm_substream *substream)
 {
 
-    pr_debug("%s start\n",__func__);
 	msm8996_mi2s_snd_shutdown(substream, AFE_PORT_ID_QUATERNARY_MI2S_RX,
 					&msm_quat_mi2s_data);
-    pr_debug("%s end\n",__func__);
 }
 static struct snd_soc_ops msm8996_quat_mi2s_be_ops = {
 	.startup = msm8996_quat_mi2s_snd_startup,
