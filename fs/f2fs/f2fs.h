@@ -145,7 +145,7 @@ static inline void bio_set_op_attrs(struct bio *bio, unsigned op,
 static inline int wbc_to_write_flags(struct writeback_control *wbc)
 {
 	if (wbc->sync_mode == WB_SYNC_ALL)
-		return REQ_SYNC;
+		return WRITE_SYNC;
 	return 0;
 }
 
