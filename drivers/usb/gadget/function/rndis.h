@@ -209,7 +209,7 @@ typedef struct rndis_params
 int  rndis_msg_parser (u8 configNr, u8 *buf);
 int  rndis_register(void (*resp_avail)(void *v), void *v,
 	void (*flow_ctrl_enable)(bool enable));
-void rndis_deregister (int configNr);
+void rndis_deregister (unsigned int configNr);
 int  rndis_set_param_dev (u8 configNr, struct net_device *dev,
 			 u16 *cdc_filter);
 int  rndis_set_param_vendor (u8 configNr, u32 vendorID,

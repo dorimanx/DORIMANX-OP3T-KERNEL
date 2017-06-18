@@ -152,7 +152,6 @@ struct qce_device {
 	struct qce_driver_stats qce_stats;
 	atomic_t bunch_cmd_seq;
 	atomic_t last_intr_seq;
-	bool cadence_flag;
 	uint8_t *dummyreq_in_buf;
 };
 
@@ -4594,7 +4593,7 @@ again:
 		if (cadence > SET_INTR_AT_REQ)
 			cadence = SET_INTR_AT_REQ;
 		if (pce_dev->intr_cadence < cadence || ((pce_dev->intr_cadence
-					== cadence) && pce_dev->cadence_flag))
+					== cadence)))
 			atomic_inc(&pce_dev->bunch_cmd_seq);
 		else {
 			_qce_set_flag(&pce_sps_data->out_transfer,
@@ -4602,7 +4601,6 @@ again:
 			pce_dev->intr_cadence = 0;
 			atomic_set(&pce_dev->bunch_cmd_seq, 0);
 			atomic_set(&pce_dev->last_intr_seq, 0);
-			pce_dev->cadence_flag = ~pce_dev->cadence_flag;
 		}
 	}
 

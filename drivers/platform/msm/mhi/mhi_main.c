@@ -1441,9 +1441,9 @@ int parse_cmd_event(struct mhi_device_ctxt *mhi_dev_ctxt,
 		u32 chan = 0;
 
 		MHI_TRB_GET_INFO(CMD_TRB_CHID, cmd_pkt, chan);
-		switch (MHI_TRB_READ_INFO(CMD_TRB_TYPE, cmd_pkt)) {
 		mhi_log(MHI_MSG_INFO, "CCE chan %d cmd %d\n", chan,
 				MHI_TRB_READ_INFO(CMD_TRB_TYPE, cmd_pkt));
+		switch (MHI_TRB_READ_INFO(CMD_TRB_TYPE, cmd_pkt)) {
 		case MHI_PKT_TYPE_RESET_CHAN_CMD:
 			ret_val = reset_chan_cmd(mhi_dev_ctxt, cmd_pkt);
 			if (ret_val)

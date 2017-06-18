@@ -938,7 +938,7 @@ int rndis_register(void (*resp_avail)(void *v), void *v,
 }
 EXPORT_SYMBOL_GPL(rndis_register);
 
-void rndis_deregister(int configNr)
+void rndis_deregister(unsigned int configNr)
 {
 	pr_debug("%s:\n", __func__);
 
