@@ -124,8 +124,8 @@ BUILD_NOW()
 		cd $KERNELDIR;
 		echo "Cleaning";
 		rm "$KERNELDIR"/READY-KERNEL/Image.gz-dtb;
-		rm "$KERNELDIR"/READY-KERNEL/modules/*.ko;
 		rm "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb;
+		#rm "$KERNELDIR"/READY-KERNEL/modules/*.ko;
 		#rm -rf "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules;
 		echo "All Done";
 	else
