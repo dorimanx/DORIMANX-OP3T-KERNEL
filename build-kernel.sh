@@ -27,6 +27,10 @@ if [ -e "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb ]; then
 	rm "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb;
 fi;
 
+if [ -e "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules ]; then
+	rm -rf "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules;
+fi;
+
 CHECK_ZIP=$(find READY-KERNEL/ -name *.zip | wc -l);
 if [ "$CHECK_ZIP" -gt "0" ]; then
 	rm READY-KERNEL/*.zip;
@@ -72,7 +76,7 @@ BUILD_NOW()
 	fi;
 
 	# build kernel and modules
-	time make ARCH=arm64 CROSS_COMPILE=android-toolchain-arm64/bin/arm-eabi- -j $NR_CPUS
+	time make ARCH=arm64 CROSS_COMPILE=android-toolchain-arm64/bin/aarch64-linux-android- -j $NR_CPUS
 
 	cp "$KERNELDIR"/.config "$KERNELDIR"/arch/arm64/configs/"$KERNEL_CONFIG_FILE";
 
@@ -91,10 +95,6 @@ BUILD_NOW()
 
 		chmod 755 READY-KERNEL/modules/*.ko
 
-		# strip not needed debugs from modules.
-		android-toolchain-arm64/bin/arm-eabi-strip --strip-unneeded READY-KERNEL/modules/*
-		android-toolchain-arm64/bin/arm-eabi-strip --strip-debug READY-KERNEL/modules/*
-
 		if [ "$PYTHON_WAS_3" -eq "1" ]; then
 			rm /usr/bin/python
 			ln -s /usr/bin/python3 /usr/bin/python
@@ -103,27 +103,15 @@ BUILD_NOW()
 		# add kernel config to kernel zip for other devs
 		cp "$KERNELDIR"/.config READY-KERNEL/installer;
 
-		if [ -e READY-KERNEL/modules.img ]; then
-			rm READY-KERNEL/modules.img;
+		# copy modules to installer.
+		if [ ! -e READY-KERNEL/installer/boot/dori_modules/ ]; then
+			mkdir -p READY-KERNEL/installer/boot/dori_modules/
 		fi;
-
-		# create ext4 image for my modules it's will be mounted on boot to /system/lib/modules, image will be 10MB
-		# Kernel allow ~50mb for ramdisk (68MB root partition)
-		dd if=/dev/zero of=READY-KERNEL/modules.img bs=4k count=2500
-		mkfs.ext4 READY-KERNEL/modules.img
-		tune2fs -c0 -i0 READY-KERNEL/modules.img
-		mount -o loop READY-KERNEL/modules.img READY-KERNEL/modules-img
-		cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/modules-img/
-		mkdir READY-KERNEL/modules-img/qca_cld
-		cd READY-KERNEL/modules-img/qca_cld
-		ln -s -f /system/lib/modules/wlan.ko qca_cld_wlan.ko
+		cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/installer/boot/dori_modules/
 		sync
-		cd $KERNELDIR;
-		du -sh READY-KERNEL/modules-img/
-		umount READY-KERNEL/modules-img/
+		du -sh READY-KERNEL/installer/boot/dori_modules/
 
 		cp READY-KERNEL/Image.gz-dtb READY-KERNEL/installer/boot/;
-		cp READY-KERNEL/modules.img READY-KERNEL/installer/boot/;
 
 		# get version from config
 		GETVER=$(grep 'Kernel-.*-V' .config |sed 's/Kernel-//g' | sed 's/.*".//g' | sed 's/-OP.*//g');
@@ -131,14 +119,14 @@ BUILD_NOW()
 		# create the flashable zip file from the contents of the installer directory
 		cd READY-KERNEL/installer/;
 		echo "Creating flashable zip..........."
-		zip -r Kernel-"${GETVER}"-OP3T-"$(date +"[%H-%M]-[%d-%m]-PWR-CORE")".zip * >/dev/null
+		zip -r Kernel-"${GETVER}"-OP3T-"$(date +"[%H-%M]-[%d-%m]-7.1.x-PWR-CORE")".zip * >/dev/null
 		mv *.zip ../
 		cd $KERNELDIR;
 		echo "Cleaning";
 		rm "$KERNELDIR"/READY-KERNEL/Image.gz-dtb;
 		rm "$KERNELDIR"/READY-KERNEL/modules/*.ko;
 		rm "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb;
-		rm "$KERNELDIR"/READY-KERNEL/modules.img;
+		rm -rf "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules;
 		echo "All Done";
 	else
 		if [ "$PYTHON_WAS_3" -eq "1" ]; then

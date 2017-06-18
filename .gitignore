@@ -90,6 +90,7 @@ out/*
 *.orig
 *~
 \#*#
+drivers/platform/msm/ipa/ipa_common
 
 #
 # Leavings from module signing
