@@ -89,11 +89,11 @@ BUILD_NOW()
 
 		cp "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb READY-KERNEL/;
 
-		for i in $(find "$KERNELDIR" -name '*.ko'); do
-			cp -av "$i" READY-KERNEL/modules/;
-        	done;
+		#for i in $(find "$KERNELDIR" -name '*.ko'); do
+		#	cp -av "$i" READY-KERNEL/modules/;
+        	#done;
 
-		chmod 755 READY-KERNEL/modules/*.ko
+		#chmod 755 READY-KERNEL/modules/*.ko
 
 		if [ "$PYTHON_WAS_3" -eq "1" ]; then
 			rm /usr/bin/python
@@ -104,12 +104,12 @@ BUILD_NOW()
 		cp "$KERNELDIR"/.config READY-KERNEL/installer;
 
 		# copy modules to installer.
-		if [ ! -e READY-KERNEL/installer/boot/dori_modules/ ]; then
-			mkdir -p READY-KERNEL/installer/boot/dori_modules/
-		fi;
-		cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/installer/boot/dori_modules/
-		sync
-		du -sh READY-KERNEL/installer/boot/dori_modules/
+		#if [ ! -e READY-KERNEL/installer/boot/dori_modules/ ]; then
+		#	mkdir -p READY-KERNEL/installer/boot/dori_modules/
+		#fi;
+		#cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/installer/boot/dori_modules/
+		#sync
+		#du -sh READY-KERNEL/installer/boot/dori_modules/
 
 		cp READY-KERNEL/Image.gz-dtb READY-KERNEL/installer/boot/;
 
@@ -126,7 +126,7 @@ BUILD_NOW()
 		rm "$KERNELDIR"/READY-KERNEL/Image.gz-dtb;
 		rm "$KERNELDIR"/READY-KERNEL/modules/*.ko;
 		rm "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb;
-		rm -rf "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules;
+		#rm -rf "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules;
 		echo "All Done";
 	else
 		if [ "$PYTHON_WAS_3" -eq "1" ]; then
