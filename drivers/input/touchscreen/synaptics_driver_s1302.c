@@ -1917,7 +1917,7 @@ static void synaptics_suspend_resume(struct work_struct *work)
 
 static int synaptics_parse_dts(struct device *dev, struct synaptics_ts_data *ts)
 {
-	int rc;
+	int rc = 0;
 	int retval;
 	struct device_node *np;
 
