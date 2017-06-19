@@ -200,7 +200,7 @@ echo "write /sys/kernel/fast_charge/force_fast_charge 1" >> $CONFIGFILE
 # Make Sure touch boost is enabled.
 echo "write /sys/module/cpu_boost/parameters/input_boost_enabled 1" >> $CONFIGFILE
 echo "write /sys/module/cpu_boost/parameters/input_boost_ms 40" >> $CONFIGFILE
-echo "write /sys/module/cpu_boost/parameters/input_boost_freq 0:1286400 1:1286400 2:1440000 3:1440000" >> $CONFIGFILE
+echo "write /sys/module/cpu_boost/parameters/input_boost_freq '0:1286400 1:1286400 2:1440000 3:1440000'" >> $CONFIGFILE
 
 # reinstall options
 echo -e "##### Reinstall Options #####" > $BACKUP
