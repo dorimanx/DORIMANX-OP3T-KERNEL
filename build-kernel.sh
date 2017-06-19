@@ -107,7 +107,7 @@ BUILD_NOW()
 		if [ ! -e READY-KERNEL/installer/boot/dori_modules/qca_cld ]; then
 			mkdir -p READY-KERNEL/installer/boot/dori_modules/qca_cld
 		fi;
-		cp READY-KERNEL/Stock_WIFI/qca_cld_wlan.ko.org READY-KERNEL/installer/boot/dori_modules/wlan.ko
+		cp READY-KERNEL/Stock_WIFI/qca_cld_wlan.ko.stock READY-KERNEL/installer/boot/dori_modules/wlan.ko
 		echo "place holder" > READY-KERNEL/installer/boot/dori_modules/qca_cld/ignore-me
 		chmod 755 READY-KERNEL/installer/boot/dori_modules/wlan.ko
 		cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/installer/boot/dori_modules/
