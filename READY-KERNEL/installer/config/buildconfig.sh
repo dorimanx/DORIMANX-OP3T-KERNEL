@@ -8,11 +8,15 @@ CONFIGFILE="/tmp/init.dorimanx.rc"
 FS_TUNE="/tmp/fs_onboot.sh"
 BACKUP="/sdcard/.dorimanx.backup"
 
+cd /tmp/dori_modules/qca_cld
+ln -s /system/lib/modules/wlan.ko qca_cld_wlan.ko
+cd /
+
 echo "on boot" >> $CONFIGFILE
 echo "" >> $CONFIGFILE
 
 #for now will use stock wifi module.
-# echo "mount none /dori_modules /system/lib/modules/ bind" >> $CONFIGFILE
+echo "mount none /dori_modules /system/lib/modules/ bind" >> $CONFIGFILE
 
 # fsync
 FSYNC=`grep "item.0.1" /tmp/aroma/mods.prop | cut -d '=' -f2`

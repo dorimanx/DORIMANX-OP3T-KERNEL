@@ -89,11 +89,11 @@ BUILD_NOW()
 
 		cp "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb READY-KERNEL/;
 
-		#for i in $(find "$KERNELDIR" -name '*.ko'); do
-		#	cp -av "$i" READY-KERNEL/modules/;
-        	#done;
+		for i in $(find "$KERNELDIR" -name '*.ko'); do
+			cp -av "$i" READY-KERNEL/modules/;
+		done;
 
-		#chmod 755 READY-KERNEL/modules/*.ko
+		chmod 755 READY-KERNEL/modules/*.ko
 
 		if [ "$PYTHON_WAS_3" -eq "1" ]; then
 			rm /usr/bin/python
@@ -104,12 +104,15 @@ BUILD_NOW()
 		cp "$KERNELDIR"/.config READY-KERNEL/installer;
 
 		# copy modules to installer.
-		#if [ ! -e READY-KERNEL/installer/boot/dori_modules/ ]; then
-		#	mkdir -p READY-KERNEL/installer/boot/dori_modules/
-		#fi;
-		#cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/installer/boot/dori_modules/
-		#sync
-		#du -sh READY-KERNEL/installer/boot/dori_modules/
+		if [ ! -e READY-KERNEL/installer/boot/dori_modules/qca_cld ]; then
+			mkdir -p READY-KERNEL/installer/boot/dori_modules/qca_cld
+		fi;
+		cp READY-KERNEL/Stock_WIFI/qca_cld_wlan.ko.org READY-KERNEL/installer/boot/dori_modules/wlan.ko
+		echo "place holder" > READY-KERNEL/installer/boot/dori_modules/qca_cld/ignore-me
+		chmod 755 READY-KERNEL/installer/boot/dori_modules/wlan.ko
+		cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/installer/boot/dori_modules/
+		sync
+		du -sh READY-KERNEL/installer/boot/dori_modules/
 
 		cp READY-KERNEL/Image.gz-dtb READY-KERNEL/installer/boot/;
 
@@ -125,8 +128,8 @@ BUILD_NOW()
 		echo "Cleaning";
 		rm "$KERNELDIR"/READY-KERNEL/Image.gz-dtb;
 		rm "$KERNELDIR"/arch/arm64/boot/Image.gz-dtb;
-		#rm "$KERNELDIR"/READY-KERNEL/modules/*.ko;
-		#rm -rf "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules;
+		rm "$KERNELDIR"/READY-KERNEL/modules/*.ko;
+		rm -rf "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules;
 		echo "All Done";
 	else
 		if [ "$PYTHON_WAS_3" -eq "1" ]; then
