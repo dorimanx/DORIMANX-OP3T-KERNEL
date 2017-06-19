@@ -50,6 +50,14 @@ chmod -R 0644 /tmp/ramdisk/dori_modules/*
 cp /tmp/initd.sh /tmp/ramdisk/
 chmod 0755 /tmp/ramdisk/initd.sh
 
+# copy fs_onboot.sh to ramdist root
+cp /tmp/fs_onboot.sh /tmp/ramdisk/
+chmod 0755 /tmp/ramdisk/fs_onboot.sh
+
+# copy busybox to ramdisk /sbin
+cp /tmp/busybox /tmp/ramdisk/sbin/
+chmod 0755 /tmp/ramdisk/sbin/busybox
+
 # allow mounting
 chmod 0750 /tmp/sepolicy-inject
 /tmp/sepolicy-inject -s init -t system_file -c dir -p mounton -P /tmp/ramdisk/sepolicy

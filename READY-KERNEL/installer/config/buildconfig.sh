@@ -5,6 +5,7 @@
 
 #Build config file
 CONFIGFILE="/tmp/init.dorimanx.rc"
+FS_TUNE="/tmp/fs_onboot.sh"
 BACKUP="/sdcard/.dorimanx.backup"
 
 echo "on boot" >> $CONFIGFILE
@@ -117,7 +118,7 @@ echo "" >> $CONFIGFILE
 # i/o scheduler
 SCHED=`grep selected.1 /tmp/aroma/disk.prop | cut -d '=' -f2`
 if [ $SCHED = 1 ]; then
-  echo "write /sys/block/dm-0/queue/scheduler cfq"  >> $CONFIGFILE
+  echo "write /sys/block/dm-0/queue/scheduler cfq"  >> $FS_TUNE
   echo "write /sys/block/sda/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler cfq"  >> $CONFIGFILE
@@ -125,7 +126,7 @@ if [ $SCHED = 1 ]; then
   echo "write /sys/block/sde/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler cfq"  >> $CONFIGFILE
 elif [ $SCHED = 2 ]; then
-  echo "write /sys/block/dm-0/queue/scheduler deadline"  >> $CONFIGFILE
+  echo "write /sys/block/dm-0/queue/scheduler deadline"  >> $FS_TUNE
   echo "write /sys/block/sda/queue/scheduler deadline"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler deadline"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler deadline"  >> $CONFIGFILE
@@ -133,7 +134,7 @@ elif [ $SCHED = 2 ]; then
   echo "write /sys/block/sde/queue/scheduler deadline"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler deadline"  >> $CONFIGFILE
 elif [ $SCHED = 3 ]; then
-  echo "write /sys/block/dm-0/queue/scheduler fiops"  >> $CONFIGFILE
+  echo "write /sys/block/dm-0/queue/scheduler fiops"  >> $FS_TUNE
   echo "write /sys/block/sda/queue/scheduler fiops"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler fiops"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler fiops"  >> $CONFIGFILE
@@ -141,7 +142,7 @@ elif [ $SCHED = 3 ]; then
   echo "write /sys/block/sde/queue/scheduler fiops"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler fiops"  >> $CONFIGFILE
 elif [ $SCHED = 4 ]; then
-  echo "write /sys/block/dm-0/queue/scheduler sio"  >> $CONFIGFILE
+  echo "write /sys/block/dm-0/queue/scheduler sio"  >> $FS_TUNE
   echo "write /sys/block/sda/queue/scheduler sio"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler sio"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler sio"  >> $CONFIGFILE
@@ -149,7 +150,7 @@ elif [ $SCHED = 4 ]; then
   echo "write /sys/block/sde/queue/scheduler sio"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler sio"  >> $CONFIGFILE
 elif [ $SCHED = 5 ]; then
-  echo "write /sys/block/dm-0/queue/scheduler bfq"  >> $CONFIGFILE
+  echo "write /sys/block/dm-0/queue/scheduler bfq"  >> $FS_TUNE
   echo "write /sys/block/sda/queue/scheduler bfq"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler bfq"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler bfq"  >> $CONFIGFILE
@@ -157,7 +158,7 @@ elif [ $SCHED = 5 ]; then
   echo "write /sys/block/sde/queue/scheduler bfq"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler bfq"  >> $CONFIGFILE
 elif [ $SCHED = 6 ]; then
-  echo "write /sys/block/dm-0/queue/scheduler noop"  >> $CONFIGFILE
+  echo "write /sys/block/dm-0/queue/scheduler noop"  >> $FS_TUNE
   echo "write /sys/block/sda/queue/scheduler noop"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler noop"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler noop"  >> $CONFIGFILE
@@ -165,7 +166,7 @@ elif [ $SCHED = 6 ]; then
   echo "write /sys/block/sde/queue/scheduler noop"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler noop"  >> $CONFIGFILE
 elif [ $SCHED = 7 ]; then
-  echo "write /sys/block/dm-0/queue/scheduler zen"  >> $CONFIGFILE
+  echo "write /sys/block/dm-0/queue/scheduler zen"  >> $FS_TUNE
   echo "write /sys/block/sda/queue/scheduler zen"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler zen"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler zen"  >> $CONFIGFILE
@@ -182,17 +183,10 @@ echo "write /sys/block/sdc/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdd/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sde/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdf/queue/read_ahead_kb 128" >> $CONFIGFILE
-echo "write /sys/block/dm-0/queue/read_ahead_kb 128" >> $CONFIGFILE
+echo "write /sys/block/dm-0/queue/read_ahead_kb 128" >> $FS_TUNE
 
 echo "" >> $CONFIGFILE
 echo "on property:sys.boot_completed=1" >> $CONFIGFILE
-
-#init.d support in /data/init.d/
-INITD_SET=`grep item.0.7 /tmp/aroma/mods.prop | cut -d '=' -f2`
-if [ $INITD_SET = 1 ]; then
-  echo "exec /system/xbin/busybox sh /initd.sh" >> $CONFIGFILE
-fi
-echo "" >> $CONFIGFILE
 
 # Enable force Fast Charge
 echo "write /sys/kernel/fast_charge/force_fast_charge 1" >> $CONFIGFILE
@@ -201,6 +195,17 @@ echo "write /sys/kernel/fast_charge/force_fast_charge 1" >> $CONFIGFILE
 echo "write /sys/module/cpu_boost/parameters/input_boost_enabled 1" >> $CONFIGFILE
 echo "write /sys/module/cpu_boost/parameters/input_boost_ms 40" >> $CONFIGFILE
 echo "write /sys/module/cpu_boost/parameters/input_boost_freq '0:1286400 1:1286400 2:1440000 3:1440000'" >> $CONFIGFILE
+
+# update data partition when it's mounted!
+echo "exec /sbin/busybox sh /fs_onboot.sh" >> $CONFIGFILE
+echo "" >> $CONFIGFILE
+
+#init.d support in /data/init.d/
+INITD_SET=`grep item.0.7 /tmp/aroma/mods.prop | cut -d '=' -f2`
+if [ $INITD_SET = 1 ]; then
+  echo "exec /sbin/busybox sh /initd.sh" >> $CONFIGFILE
+fi
+echo "" >> $CONFIGFILE
 
 # reinstall options
 echo -e "##### Reinstall Options #####" > $BACKUP
