@@ -7633,8 +7633,10 @@ out_unlock:
 	return retval;
 }
 
-int affinity_on = 0;
-int affinity_core = 2;
+static int affinity_on = 0;
+static int affinity_core = 2;
+__read_mostly int sysctl_affinity_switch = 0;
+__read_mostly int sysctl_affinity_core = 2;
 #define BG_FG_POLICY 0xfffc
 #define TOP_POLICY 0xfffd
 long sched_setaffinity(pid_t pid, struct cpumask *in_mask)
@@ -7801,21 +7803,45 @@ int affinity_switch_handler(struct ctl_table *table, int write,
             void __user *buffer, size_t *lenp,
             loff_t *ppos)
 {
-    int *buf = buffer;
-    affinity_on = buf[0];
-    process_affinity(affinity_on);
-    return 0;
+	int ret;
+	int *buf = buffer;
+
+	if (!write)
+		affinity_on = 0;
+
+	ret = proc_dointvec(table, write, buffer, lenp, ppos);
+	if (ret || !write)
+		goto done;
+
+	affinity_on = buf[0];
+	sysctl_affinity_switch = affinity_on;
+	process_affinity(affinity_on);
+done:
+	return ret;
 }
 
 int affinity_core_handler(struct ctl_table *table, int write,
             void __user *buffer, size_t *lenp,
             loff_t *ppos)
 {
-    int *buf = buffer;
-    affinity_core = buf[0];
-    if(affinity_on)
-        process_affinity(affinity_on);
-    return 0;
+	int ret;
+	int *buf = buffer;
+
+	if (!write)
+		affinity_core = 2;
+
+	ret = proc_dointvec(table, write, buffer, lenp, ppos);
+	if (ret || !write)
+		goto done;
+
+	affinity_core = buf[0];
+
+	sysctl_affinity_core = affinity_core;
+	if (affinity_on)
+		process_affinity(affinity_on);
+
+done:
+	return ret;
 }
 
 
