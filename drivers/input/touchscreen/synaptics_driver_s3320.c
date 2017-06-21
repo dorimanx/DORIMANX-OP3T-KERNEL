@@ -4068,10 +4068,7 @@ static void synaptics_suspend_resume(struct work_struct *work)
 			touch_disable(ts);
 		synaptics_ts_suspend(&ts->client->dev);
 	} else {
-		if (ts->gesture_enable)
-			synaptics_enable_interrupt_for_gesture(ts, false);
-		atomic_set(&ts->is_stop, 0);
-		touch_enable(ts);
+		queue_delayed_work(get_base_report, &ts->base_work,msecs_to_jiffies(1));
 		synaptics_ts_resume(&ts->client->dev);
 	}
 }
