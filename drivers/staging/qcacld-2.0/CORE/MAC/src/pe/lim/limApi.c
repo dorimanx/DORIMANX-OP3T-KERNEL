@@ -1330,8 +1330,8 @@ VOS_STATUS peHandleMgmtFrame( v_PVOID_t pvosGCtx, v_PVOID_t vosBuff)
                   WDA_GET_OFFLOADSCANLEARN(pRxPacketInfo));
 #endif
 
-    if ((mHdr->fc.subType != SIR_MAC_MGMT_BEACON) && gpe_packetdump_cb)
-        gpe_packetdump_cb(pVosPkt->pkt_buf, VOS_STATUS_SUCCESS,
+       if ((mHdr->fc.subType != SIR_MAC_MGMT_BEACON) && gpe_packetdump_cb)
+            gpe_packetdump_cb(pVosPkt->pkt_buf, VOS_STATUS_SUCCESS,
                                    pVosPkt->pkt_meta.sessionId, RX_MGMT_PKT);
     }
 
