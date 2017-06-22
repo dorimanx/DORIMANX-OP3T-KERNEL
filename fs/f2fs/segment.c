@@ -1161,7 +1161,7 @@ static int issue_discard_thread(void *data)
 		__issue_discard_cmd(sbi, true);
 		__wait_discard_cmd(sbi, true);
 
-		congestion_wait(BLK_RW_SYNC, HZ/50);
+		congestion_wait(BLK_RW_SYNC, msecs_to_jiffies(20));
 	} while (!kthread_should_stop());
 	return 0;
 }
