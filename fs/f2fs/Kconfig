@@ -102,3 +102,23 @@ config F2FS_FAULT_INJECTION
 	  Test F2FS to inject faults such as ENOMEM, ENOSPC, and so on.
 
 	  If unsure, say N.
+
+config F2FS_DEFAULT_NOINLINE_DENTRY
+	bool "F2FS disable inline dentry by default"
+	depends on F2FS_FS
+	help
+	  Removes inline_dentry from the default mount options to maintain
+	  compatibility with Linux stable's older revision of F2FS.
+
+config F2FS_DEFAULT_INLINE_XATTR
+	bool "F2FS enable inline xattr by default"
+	depends on F2FS_FS
+	depends on F2FS_FS_XATTR
+	help
+	  Adds inline_xattr to the default mount options.
+
+config F2FS_OPT3_OEM_MODS
+	bool "OPT3 OEM changes to F2FS"
+	depends on F2FS_FS
+	help
+	  No info exist for what OP3T devs need to know ci_name value in folder/files
