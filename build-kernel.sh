@@ -31,6 +31,27 @@ if [ -e "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules ]; then
 	rm -rf "$KERNELDIR"/READY-KERNEL/installer/boot/dori_modules;
 fi;
 
+# check for updated gcc xz file
+if [ -e "$KERNELDIR"/compressed-toolchain/ver_check.txt ]; then
+	VER_NOW=$(cat "$KERNELDIR"/compressed-toolchain/ver_check.txt);
+	cd "$KERNELDIR"/compressed-toolchain/
+	VER_NEW=$(ls *.xz);
+	cd ..
+
+	if [ $VER_NOW != $VER_NEW ]; then
+		rm -rf "$KERNELDIR"/android-toolchain-arm64
+		git checkout "$KERNELDIR"/android-toolchain-arm64
+	fi;
+fi;
+
+if [ ! -e "$KERNELDIR"/android-toolchain-arm64/bin ]; then
+	echo "decompressing toolchain from compressed-toolchain to android-toolchain-arm64"
+	cd "$KERNELDIR"/compressed-toolchain
+	tar -xvf *.xz --strip-components=1 --directory="$KERNELDIR"/android-toolchain-arm64
+	ls *.xz > ver_check.txt
+	cd "$KERNELDIR"/
+fi;
+
 CHECK_ZIP=$(find READY-KERNEL/ -name *.zip | wc -l);
 if [ "$CHECK_ZIP" -gt "0" ]; then
 	rm READY-KERNEL/*.zip;
@@ -76,7 +97,7 @@ BUILD_NOW()
 	fi;
 
 	# build kernel and modules
-	time make ARCH=arm64 CROSS_COMPILE=android-toolchain-arm64/bin/aarch64-linux-android- -j $NR_CPUS
+	time make ARCH=arm64 CROSS_COMPILE=android-toolchain-arm64/bin/aarch64-linux-gnu- -j $NR_CPUS
 
 	cp "$KERNELDIR"/.config "$KERNELDIR"/arch/arm64/configs/"$KERNEL_CONFIG_FILE";
 

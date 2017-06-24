@@ -1,2 +1,6 @@
 # Generated files
-!*
+aarch64-linux-gnu/
+bin/
+lib/
+libexec/
+share/
