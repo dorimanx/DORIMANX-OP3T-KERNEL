@@ -7645,11 +7645,11 @@ long sched_setaffinity(pid_t pid, struct cpumask *in_mask)
 	struct task_struct *p;
 	int retval;
 
-    int ams_flag = 0;
-    if(pid & 0x80000000){
-        pid = pid & 0x7fffffff;
-        ams_flag = 1;
-    }
+	int ams_flag = 0;
+	if (pid & 0x80000000) {
+		pid = pid & 0x7fffffff;
+		ams_flag = 1;
+	}
 	rcu_read_lock();
 
 	p = find_process_by_pid(pid);
@@ -7657,22 +7657,23 @@ long sched_setaffinity(pid_t pid, struct cpumask *in_mask)
 		rcu_read_unlock();
 		return -ESRCH;
 	}
-    if(ams_flag){
-        if(cpumask_test_cpu(3, in_mask))
-            p->ams_policy = TOP_POLICY;
-        else
-            p->ams_policy = BG_FG_POLICY;
-        if(!affinity_on && !cpumask_test_cpu(3, in_mask)){
-            rcu_read_unlock();
-            return 0;
-        }
-        if(affinity_core > 0 && !cpumask_test_cpu(3, in_mask)){
-            int i;
-            cpumask_clear(in_mask);
-            for(i = 0; i < affinity_core; i++)
-                cpumask_set_cpu(i, in_mask);
-        }
-    }
+
+	if (ams_flag) {
+		if (cpumask_test_cpu(3, in_mask))
+			p->ams_policy = TOP_POLICY;
+		else
+			p->ams_policy = BG_FG_POLICY;
+		if (!affinity_on && !cpumask_test_cpu(3, in_mask)) {
+			rcu_read_unlock();
+			return 0;
+		}
+		if (affinity_core > 0 && !cpumask_test_cpu(3, in_mask)) {
+			int i;
+			cpumask_clear(in_mask);
+			for (i = 0; i < affinity_core; i++)
+				cpumask_set_cpu(i, in_mask);
+		}
+	}
 
 	/* Prevent p going away */
 	get_task_struct(p);
@@ -7691,8 +7692,10 @@ long sched_setaffinity(pid_t pid, struct cpumask *in_mask)
 		goto out_free_cpus_allowed;
 	}
 	retval = -EPERM;
-    if(!memcmp(current->comm, "thermal-engine", 12))
-        goto direct_set;
+
+	if (!memcmp(current->comm, "thermal-engine", 12))
+		goto direct_set;
+
 	if (!check_same_owner(p)) {
 		rcu_read_lock();
 		if (!ns_capable(__task_cred(p)->user_ns, CAP_SYS_NICE)) {
@@ -7754,49 +7757,51 @@ static LIST_HEAD(affility_list);
 
 void process_affinity(int on)
 {
-    struct task_struct *g, *p;
-    struct cpumask limit_mask;
-    struct cpumask unlimit_mask;
-    const struct cpumask* msk;
-    int i;
-    cpumask_setall(&limit_mask);
-    cpumask_setall(&unlimit_mask);
-    if(affinity_core > 0){
-        cpumask_clear(&limit_mask);
-        for(i = 0; i < affinity_core; i++)
-            cpumask_set_cpu(i, &limit_mask);
-    }
-    if(on){
-        msk = &limit_mask;
-    	read_lock(&tasklist_lock);
-    	do_each_thread(g, p) {
-    		if(p->ams_policy == BG_FG_POLICY)
-                //sched_setaffinity(p->pid, &limit_mask);
-                list_add(&p->affinity_node, &affility_list);
-    	}  while_each_thread(g, p);
-    	read_unlock(&tasklist_lock);
-        while(!list_empty(&affility_list)){
-            p = list_first_entry(&affility_list, struct task_struct, affinity_node);
-            list_del_init(&p->affinity_node);
-            sched_setaffinity(p->pid, &limit_mask);
-        }
-    }
-    else{
-        msk = &unlimit_mask;
-        read_lock(&tasklist_lock);
-	    do_each_thread(g, p) {
-		    if(p->ams_policy == BG_FG_POLICY)
-                //sched_setaffinity(p->pid, &unlimit_mask);
-                list_add(&p->affinity_node, &affility_list);
-	    }  while_each_thread(g, p);
-	    read_unlock(&tasklist_lock);
-        while(!list_empty(&affility_list)){
-            p = list_first_entry(&affility_list, struct task_struct, affinity_node);
-            list_del_init(&p->affinity_node);
-            sched_setaffinity(p->pid, &unlimit_mask);
-        }
-    }
-    BUG_ON(!list_empty(&affility_list));
+	struct task_struct *g, *p;
+	struct cpumask limit_mask;
+	struct cpumask unlimit_mask;
+	const struct cpumask* msk;
+	int i;
+
+	cpumask_setall(&limit_mask);
+	cpumask_setall(&unlimit_mask);
+	if (affinity_core > 0) {
+		cpumask_clear(&limit_mask);
+		for (i = 0; i < affinity_core; i++)
+			cpumask_set_cpu(i, &limit_mask);
+	}
+	if (on) {
+		msk = &limit_mask;
+		read_lock(&tasklist_lock);
+		do_each_thread(g, p) {
+			if (p->ams_policy == BG_FG_POLICY)
+				//sched_setaffinity(p->pid, &limit_mask);
+				list_add(&p->affinity_node, &affility_list);
+		}  while_each_thread(g, p);
+		read_unlock(&tasklist_lock);
+
+		while (!list_empty(&affility_list)) {
+			p = list_first_entry(&affility_list, struct task_struct, affinity_node);
+			list_del_init(&p->affinity_node);
+			sched_setaffinity(p->pid, &limit_mask);
+		}
+	} else {
+		msk = &unlimit_mask;
+		read_lock(&tasklist_lock);
+		do_each_thread(g, p) {
+			if (p->ams_policy == BG_FG_POLICY)
+				//sched_setaffinity(p->pid, &unlimit_mask);
+				list_add(&p->affinity_node, &affility_list);
+			} while_each_thread(g, p);
+			read_unlock(&tasklist_lock);
+
+			while (!list_empty(&affility_list)) {
+				p = list_first_entry(&affility_list, struct task_struct, affinity_node);
+				list_del_init(&p->affinity_node);
+				sched_setaffinity(p->pid, &unlimit_mask);
+			}
+	}
+	BUG_ON(!list_empty(&affility_list));
 }
 
 int affinity_switch_handler(struct ctl_table *table, int write,
