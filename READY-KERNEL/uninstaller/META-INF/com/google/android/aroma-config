@@ -17,10 +17,10 @@
 ###
 
 ini_set("rom_name",             "Dorimanx-PWR-CORE Uninstaller");
-ini_set("rom_version",          "Stock OTA 029 1612131737");
-ini_set("rom_author",           "OnePlus Oxygen 6.0.1");
-ini_set("rom_device",           "OnePlus 3T");
-ini_set("rom_date",             "JAN 13 2017");
+ini_set("rom_version",          "Stock OTA 054 1706101907");
+ini_set("rom_author",           "OnePlus Oxygen 7.1.1");
+ini_set("rom_device",           "OnePlus 3/T");
+ini_set("rom_date",             "JUN 10 2017");
 
 ini_set("force_colorspace","rgba");
 
@@ -49,7 +49,7 @@ menubox(
   "<@center>\nReady to Uninstall and restore stock\n\n</@>",
   "",
   "menu.prop",
-  "Uninstall Dorimanx PWR CORE\nAnd Install Stock OTA 029","","@install",
+  "Uninstall Dorimanx PWR CORE\nAnd Install Stock OTA 054","","@install",
   "Abort installation","","@trash"
 );
 

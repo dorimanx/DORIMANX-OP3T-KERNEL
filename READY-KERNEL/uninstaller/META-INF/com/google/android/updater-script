@@ -1,6 +1,6 @@
 set_progress(0.0);
 ui_print("");
-ui_print("Uninstalling Dorimanx Kernel...");
+ui_print("Uninstalling Dorimanx N Kernel...");
 
 set_progress(0.1);
 package_extract_dir("config", "/tmp");
@@ -26,7 +26,7 @@ run_program("/tmp/editramdisk.sh");
 run_program("/tmp/makebootimg.sh");
 
 set_progress(0.7);
-ui_print("Uninstalling kernel and installing stock!");
+ui_print("Uninstalling kernel and installing Stock N Kernel!");
 run_program("/tmp/busybox", "dd", "if=/tmp/newboot.img", "of=/dev/block/bootdevice/by-name/boot");
 
 set_progress(0.9);
