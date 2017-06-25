@@ -32,6 +32,10 @@ if grep -qr verify /tmp/ramdisk/fstab.qcom; then
 	sed -i "s/,verify//" /tmp/ramdisk/fstab.qcom
 fi
 
+if ! grep -q 'bg_apps_limit' /tmp/ramdisk/default.prop; then
+	echo "ro.sys.fw.bg_apps_limit=60" >> /tmp/ramdisk/default.prop
+fi;
+
 # Start dorimanx script
 if [ $(grep -c "import /init.dorimanx.rc" /tmp/ramdisk/init.rc) == 0 ]; then
 	sed -i "1i import /init.dorimanx.rc" /tmp/ramdisk/init.rc
