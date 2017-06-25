@@ -27,7 +27,7 @@
 *.gz
 *.bz2
 *.lzma
-*.xz
+#*.xz
 *.lz4
 *.lzo
 *.patch
