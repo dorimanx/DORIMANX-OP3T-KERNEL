@@ -18,6 +18,6 @@
 # Before you start make sure READY-KERNEL/ contain only new update.
 
 if [ -e /root/ftp_login_mirror1.cfg ]; then
-	cp READY-KERNEL/*OP3T*.zip ../OP3T-DOWNLOADS/N-KERNEL/Kernels/
-	ncftpput -f /root/ftp_login_mirror1.cfg /OP3T/Kernel/ READY-KERNEL/*OP3T*.zip
+	cp READY-KERNEL/*OP3-T*.zip ../OP3T-DOWNLOADS/N-KERNEL/Kernels/
+	ncftpput -f /root/ftp_login_mirror1.cfg /OP3T/Kernel/ READY-KERNEL/*OP3-T*.zip
 fi;
