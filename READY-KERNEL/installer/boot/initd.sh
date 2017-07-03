@@ -10,6 +10,6 @@ if [ ! -e /data/init.d ]; then
 	mkdir /data/init.d
 fi;
 
-chmod -R 777 /data/init.d/
-logwrapper /sbin/busybox run-parts /data/init.d/
+chmod 0777 /data/init.d/*
+exec /sbin/busybox run-parts /data/init.d/
 
