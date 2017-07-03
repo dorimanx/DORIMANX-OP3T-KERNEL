@@ -3,7 +3,7 @@
 export PATH=${PATH}:/system/bin:/sbin
 
 while [ "$(mount | grep dm-0 | wc -l)" -eq "0" ]; do
-	sleep 3;
+	sleep 5;
 done;
 
 # Enable force Fast Charge
@@ -16,14 +16,14 @@ project=`getprop ro.boot.project_name`
 case "$project" in
 	"15811")
 		# input boost configuration
-		echo "0:1286400 1:1286400 2:1363200 3:1363200" > /sys/module/cpu_boost/parameters/input_boost_freq
+		echo "0:1286400 2:1363200" > /sys/module/cpu_boost/parameters/input_boost_freq
 	;;
 esac
 
 case "$project" in
 	"15801")
 		# input boost configuration
-		echo "0:1363200 1:1363200 2:1363200 3:1363200" > /sys/module/cpu_boost/parameters/input_boost_freq
+		echo "0:1363200 2:1363200" > /sys/module/cpu_boost/parameters/input_boost_freq
 	;;
 esac
 
@@ -109,13 +109,14 @@ echo 1 > /sys/devices/system/cpu/cpu2/cpufreq/interactive/ignore_hispeed_on_noti
 TIME_NOW=$(date)
 echo "$TIME_NOW" > /data/dori_boot.txt
 
-# Run init.d if enabled
 INITD_MODE=$(cat /data/initd_mode)
 if [ "$INITD_MODE" -eq "1" ]; then
-	for i in /data/init.d/*; do
-		/sbin/busybox sh $i
-	done
+	if [ -e /data/init.d ]; then
+		/sbin/busybox run-parts /data/init.d/ > /dev/null 2>&1
+	fi
+	echo "initd finished" > /data/initd_status;
 fi
 
-echo 1 > /sys/fs/selinux/enforce
+# Restore selinux
+echo "1" > /sys/fs/selinux/enforce
 
