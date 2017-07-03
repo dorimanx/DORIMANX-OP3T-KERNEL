@@ -122,7 +122,7 @@ echo "" >> $CONFIGFILE
 # i/o scheduler
 SCHED=`grep selected.1 /tmp/aroma/disk.prop | cut -d '=' -f2`
 if [ $SCHED = 1 ]; then
-  echo "echo cfg > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
+  echo "echo cfq > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
   echo "write /sys/block/sda/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler cfq"  >> $CONFIGFILE

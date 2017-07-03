@@ -50,9 +50,10 @@ fi
 cp -a /tmp/dori_modules/* /tmp/ramdisk/dori_modules/
 chmod -R 0644 /tmp/ramdisk/dori_modules/*
 
-# Copy initd.sh to ramdisk root
-cp /tmp/initd.sh /tmp/ramdisk/
-chmod 0755 /tmp/ramdisk/initd.sh
+# clean old init.d script, no longer used
+if [ -e /tmp/ramdisk/initd.sh ]; then
+	rm /tmp/ramdisk/initd.sh
+fi
 
 # copy fs_onboot.sh to ramdist root
 cp /tmp/fs_onboot.sh /tmp/ramdisk/
