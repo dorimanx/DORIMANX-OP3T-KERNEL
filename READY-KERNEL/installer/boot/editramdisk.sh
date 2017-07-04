@@ -59,6 +59,10 @@ fi
 cp /tmp/fs_onboot.sh /tmp/ramdisk/
 chmod 0755 /tmp/ramdisk/fs_onboot.sh
 
+# copy fs_gov.sh to ramdist root
+cp /tmp/fs_gov.sh /tmp/ramdisk/
+chmod 0755 /tmp/ramdisk/fs_gov.sh
+
 # copy busybox to ramdisk /sbin
 cp /tmp/busybox /tmp/ramdisk/sbin/
 chmod 0755 /tmp/ramdisk/sbin/busybox

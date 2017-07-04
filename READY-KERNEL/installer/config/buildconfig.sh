@@ -5,7 +5,7 @@
 
 #Build config file
 CONFIGFILE="/tmp/init.dorimanx.rc"
-FS_TUNE="/tmp/fs_onboot.sh"
+FS_DATA_GOV="/tmp/fs_gov.sh"
 BACKUP="/sdcard/.dorimanx.backup"
 
 cd /tmp/dori_modules/qca_cld
@@ -122,7 +122,7 @@ echo "" >> $CONFIGFILE
 # i/o scheduler
 SCHED=`grep selected.1 /tmp/aroma/disk.prop | cut -d '=' -f2`
 if [ $SCHED = 1 ]; then
-  echo "echo cfq > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
+  echo "cfq" > $FS_DATA_GOV
   echo "write /sys/block/sda/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler cfq"  >> $CONFIGFILE
@@ -130,7 +130,7 @@ if [ $SCHED = 1 ]; then
   echo "write /sys/block/sde/queue/scheduler cfq"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler cfq"  >> $CONFIGFILE
 elif [ $SCHED = 2 ]; then
-  echo "echo deadline > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
+  echo "deadline" > $FS_DATA_GOV
   echo "write /sys/block/sda/queue/scheduler deadline"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler deadline"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler deadline"  >> $CONFIGFILE
@@ -138,7 +138,7 @@ elif [ $SCHED = 2 ]; then
   echo "write /sys/block/sde/queue/scheduler deadline"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler deadline"  >> $CONFIGFILE
 elif [ $SCHED = 3 ]; then
-  echo "echo fiops > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
+  echo "fiops" > $FS_DATA_GOV
   echo "write /sys/block/sda/queue/scheduler fiops"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler fiops"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler fiops"  >> $CONFIGFILE
@@ -146,7 +146,7 @@ elif [ $SCHED = 3 ]; then
   echo "write /sys/block/sde/queue/scheduler fiops"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler fiops"  >> $CONFIGFILE
 elif [ $SCHED = 4 ]; then
-  echo "echo sio > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
+  echo "sio" > $FS_DATA_GOV
   echo "write /sys/block/sda/queue/scheduler sio"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler sio"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler sio"  >> $CONFIGFILE
@@ -154,7 +154,7 @@ elif [ $SCHED = 4 ]; then
   echo "write /sys/block/sde/queue/scheduler sio"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler sio"  >> $CONFIGFILE
 elif [ $SCHED = 5 ]; then
-  echo "echo bfq > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
+  echo "bfq" > $FS_DATA_GOV
   echo "write /sys/block/sda/queue/scheduler bfq"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler bfq"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler bfq"  >> $CONFIGFILE
@@ -162,7 +162,7 @@ elif [ $SCHED = 5 ]; then
   echo "write /sys/block/sde/queue/scheduler bfq"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler bfq"  >> $CONFIGFILE
 elif [ $SCHED = 6 ]; then
-  echo "echo noop > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
+  echo "noop" > $FS_DATA_GOV
   echo "write /sys/block/sda/queue/scheduler noop"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler noop"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler noop"  >> $CONFIGFILE
@@ -170,7 +170,7 @@ elif [ $SCHED = 6 ]; then
   echo "write /sys/block/sde/queue/scheduler noop"  >> $CONFIGFILE
   echo "write /sys/block/sdf/queue/scheduler noop"  >> $CONFIGFILE
 elif [ $SCHED = 7 ]; then
-  echo "echo zen > /sys/block/dm-0/queue/scheduler"  >> $FS_TUNE
+  echo "zen" > $FS_DATA_GOV
   echo "write /sys/block/sda/queue/scheduler zen"  >> $CONFIGFILE
   echo "write /sys/block/sdb/queue/scheduler zen"  >> $CONFIGFILE
   echo "write /sys/block/sdc/queue/scheduler zen"  >> $CONFIGFILE
@@ -187,7 +187,6 @@ echo "write /sys/block/sdc/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdd/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sde/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdf/queue/read_ahead_kb 128" >> $CONFIGFILE
-echo "echo 128 > /sys/block/dm-0/queue/read_ahead_kb" >> $FS_TUNE
 
 echo "" >> $CONFIGFILE
 
