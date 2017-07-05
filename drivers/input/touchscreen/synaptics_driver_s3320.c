@@ -4710,8 +4710,11 @@ static int fb_notifier_callback(struct notifier_block *self, unsigned long event
 
 	switch (*blank) {
 	case FB_BLANK_UNBLANK:
+/*
+	OP3 support for "liftup" screen wake gesture
 	case FB_BLANK_VSYNC_SUSPEND:
 	case FB_BLANK_NORMAL:
+*/
 		if (ts->is_suspended) {
 			ts->is_suspended = 0;
 			queue_work(system_highpri_wq, &ts->pm_work);
