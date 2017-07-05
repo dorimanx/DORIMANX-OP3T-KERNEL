@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 3.18.57 Kernel Configuration
+# Linux/arm64 3.18.59 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -518,6 +518,7 @@ CONFIG_CPU_IDLE_GOV_MENU=y
 # CPU Frequency scaling
 #
 CONFIG_CPU_FREQ=y
+CONFIG_QCOM_CPUFREQ_LIMITER=y
 CONFIG_CPU_FREQ_GOV_COMMON=y
 CONFIG_SCHED_FREQ_INPUT=y
 CONFIG_CPU_FREQ_STAT=y
