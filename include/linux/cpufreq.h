@@ -21,6 +21,30 @@
 #include <asm/cputime.h>
 
 
+#ifdef CONFIG_QCOM_CPUFREQ_LIMITER
+extern unsigned int get_cpu_min_lock(unsigned int cpu);
+extern void set_cpu_min_lock(unsigned int cpu, int freq);
+extern unsigned int get_cpu_max_lock(unsigned int cpu);
+extern void set_cpu_max_lock(unsigned int cpu, unsigned int freq);
+#else
+static unsigned int get_cpu_min_lock(unsigned int cpu)
+{
+	return -ENOSYS;
+}
+static void set_cpu_min_lock(unsigned int cpu, int freq)
+{
+	return -ENOSYS;
+}
+static unsigned int get_cpu_max_lock(unsigned int cpu)
+{
+	return -ENOSYS;
+}
+static void set_cpu_max_lock(unsigned int cpu, unsigned int freq)
+{
+	return -ENOSYS;
+}
+#endif
+
 /*********************************************************************
  *                        CPUFREQ INTERFACE                          *
  *********************************************************************/

@@ -17,6 +17,13 @@ config CPU_FREQ
 
 if CPU_FREQ
 
+config QCOM_CPUFREQ_LIMITER
+        tristate "QCOM CPU frequency limiter"
+        default y
+        help
+          This driver limits QCOM CPU frequency through sysfs file system.
+          If in doubt, say Y.
+
 config CPU_FREQ_GOV_COMMON
 	bool
 

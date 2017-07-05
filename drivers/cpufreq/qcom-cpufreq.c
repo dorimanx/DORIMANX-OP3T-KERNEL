@@ -56,12 +56,191 @@ static DEFINE_PER_CPU(struct cpufreq_suspend_t, suspend_data);
 unsigned int cluster1_first_cpu = 0;
 #endif
 
+#ifdef CONFIG_QCOM_CPUFREQ_LIMITER
+static unsigned int upper_limit_freq_pro[NR_CPUS] = {0, 0, 0, 0};
+static unsigned int upper_limit_freq[NR_CPUS] = {0, 0, 0, 0};
+static unsigned int lower_limit_freq[NR_CPUS] = {0, 0, 0, 0};
+#define CPU_MAX_OC_FREQ_PRO_BC	2419200
+#define CPU_MAX_OC_FREQ_PRO_LC	2188800
+#define CPU_MAX_OC_FREQ_BC	2265600
+#define CPU_MAX_OC_FREQ_LC	1728000
+#define CPU_MIN_DEFAULT_FREQ	307200
+
+unsigned int get_cpu_min_lock(unsigned int cpu)
+{
+	if (cpu >= 0 && cpu < NR_CPUS)
+		return lower_limit_freq[cpu];
+	else
+		return 0;
+}
+EXPORT_SYMBOL(get_cpu_min_lock);
+
+void set_cpu_min_lock(unsigned int cpu, int freq)
+{
+	if (cpu >= 0 && cpu < NR_CPUS) {
+		/*
+		 * OP3/T device has 2 cpu clusters,
+		 * each 2 cores are linked with same freq and gov
+		 * make sure they get set with same lock freq per cluster.
+		 */
+		if (socinfo_get_id() == 305) {
+			if (cpu <= 1) {
+				if (freq <= CPU_MIN_DEFAULT_FREQ ||
+						freq > CPU_MAX_OC_FREQ_PRO_LC) {
+					lower_limit_freq[0] = 0;
+					lower_limit_freq[1] = 0;
+				} else {
+					lower_limit_freq[0] = freq;
+					lower_limit_freq[1] = freq;
+				}
+			} else if (cpu >= 2) {
+				if (freq <= CPU_MIN_DEFAULT_FREQ ||
+						freq > CPU_MAX_OC_FREQ_PRO_BC) {
+					lower_limit_freq[2] = 0;
+					lower_limit_freq[3] = 0;
+				} else {
+					lower_limit_freq[2] = freq;
+					lower_limit_freq[3] = freq;
+				}
+			}
+		} else {
+			if (cpu <= 1) {
+				if (freq <= CPU_MIN_DEFAULT_FREQ ||
+						freq > CPU_MAX_OC_FREQ_LC) {
+					lower_limit_freq[0] = 0;
+					lower_limit_freq[1] = 0;
+				} else {
+					lower_limit_freq[0] = freq;
+					lower_limit_freq[1] = freq;
+				}
+			} else if (cpu >= 2) {
+				if (freq <= CPU_MIN_DEFAULT_FREQ ||
+						freq > CPU_MAX_OC_FREQ_BC) {
+					lower_limit_freq[2] = 0;
+					lower_limit_freq[3] = 0;
+				} else {
+					lower_limit_freq[2] = freq;
+					lower_limit_freq[3] = freq;
+				}
+			}
+		}
+	}
+}
+EXPORT_SYMBOL(set_cpu_min_lock);
+
+unsigned int get_cpu_max_lock(unsigned int cpu)
+{
+	if (cpu >= 0 && cpu < NR_CPUS) {
+		if (socinfo_get_id() == 305)
+			return upper_limit_freq_pro[cpu];
+		else
+			return upper_limit_freq[cpu];
+	} else
+		return 0;
+}
+EXPORT_SYMBOL(get_cpu_max_lock);
+
+void set_cpu_max_lock(unsigned int cpu, unsigned int freq)
+{
+	if (cpu >= 0 && cpu <= NR_CPUS) {
+		/*
+		 * OP3/T device has 2 cpu clusters,
+		 * each 2 cores are linked with same freq and gov
+		 * make sure they get set with same lock freq per cluster.
+		 */
+		if (freq == 0) {
+			if (socinfo_get_id() == 305) {
+				if (cpu <= 1) {
+					upper_limit_freq_pro[0] = 0;
+					upper_limit_freq_pro[1] = 0;
+				} else if (cpu >= 2) {
+					upper_limit_freq_pro[2] = 0;
+					upper_limit_freq_pro[3] = 0;
+				}
+			} else {
+				if (cpu <= 1) {
+					upper_limit_freq[0] = 0;
+					upper_limit_freq[1] = 0;
+				} else if (cpu >= 2) {
+					upper_limit_freq[2] = 0;
+					upper_limit_freq[3] = 0;
+				}
+			}
+		} else if (socinfo_get_id() == 305) {
+			if (cpu <= 1) {
+				if (freq < CPU_MIN_DEFAULT_FREQ ||
+						freq > CPU_MAX_OC_FREQ_PRO_LC) {
+					upper_limit_freq_pro[0] = CONFIG_CPU_FREQ_MAX_CLUSTER1;
+					upper_limit_freq_pro[1] = CONFIG_CPU_FREQ_MAX_CLUSTER1;
+				} else {
+					upper_limit_freq_pro[0] = freq;
+					upper_limit_freq_pro[1] = freq;
+				}
+			} else if (cpu >= 2) {
+				if (freq < CPU_MIN_DEFAULT_FREQ ||
+						freq > CPU_MAX_OC_FREQ_PRO_BC) {
+					upper_limit_freq_pro[2] = CONFIG_CPU_FREQ_MAX_CLUSTER2PRO;
+					upper_limit_freq_pro[3] = CONFIG_CPU_FREQ_MAX_CLUSTER2PRO;
+				} else {
+					upper_limit_freq_pro[2] = freq;
+					upper_limit_freq_pro[3] = freq;
+				}
+			}
+		} else if (cpu <= 1) {
+			if (freq < CPU_MIN_DEFAULT_FREQ || freq > CPU_MAX_OC_FREQ_LC) {
+				upper_limit_freq[0] = CONFIG_CPU_FREQ_MAX_CLUSTER1;
+				upper_limit_freq[1] = CONFIG_CPU_FREQ_MAX_CLUSTER1;
+			} else {
+				upper_limit_freq[0] = freq;
+				upper_limit_freq[1] = freq;
+			}
+		} else if (cpu >= 2) {
+			if (freq < CPU_MIN_DEFAULT_FREQ || freq > CPU_MAX_OC_FREQ_BC) {
+				upper_limit_freq[2] = CONFIG_CPU_FREQ_MAX_CLUSTER2;
+				upper_limit_freq[3] = CONFIG_CPU_FREQ_MAX_CLUSTER2;
+			} else {
+				upper_limit_freq[2] = freq;
+				upper_limit_freq[3] = freq;
+			}
+		}
+	}
+}
+EXPORT_SYMBOL(set_cpu_max_lock);
+#endif
+
 static int set_cpu_freq(struct cpufreq_policy *policy, unsigned int new_freq,
 			unsigned int index)
 {
 	int ret = 0;
 	struct cpufreq_freqs freqs;
 	unsigned long rate;
+#ifdef CONFIG_QCOM_CPUFREQ_LIMITER
+	unsigned int ll_freq = lower_limit_freq[policy->cpu];
+	unsigned int ul_freq_pro = upper_limit_freq_pro[policy->cpu];
+	unsigned int ul_freq = upper_limit_freq[policy->cpu];
+
+	if (ll_freq || ul_freq || ul_freq_pro) {
+		unsigned int t_freq = new_freq;
+
+		if (ll_freq && new_freq < ll_freq)
+			t_freq = ll_freq;
+
+		if (socinfo_get_id() == 305) {
+			if (ul_freq_pro && new_freq > ul_freq_pro)
+				t_freq = ul_freq_pro;
+		} else {
+			if (ul_freq && new_freq > ul_freq)
+				t_freq = ul_freq;
+		}
+
+		new_freq = t_freq;
+
+		if (new_freq < policy->min)
+			new_freq = policy->min;
+		if (new_freq > policy->max)
+			new_freq = policy->max;
+	}
+#endif
 
 	freqs.old = policy->cur;
 	freqs.new = new_freq;
