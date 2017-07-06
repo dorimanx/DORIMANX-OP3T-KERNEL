@@ -25,6 +25,11 @@ elif [ "$DATA_MODE" -eq "2" ]; then
 	echo 128 > /sys/block/sda15/queue/read_ahead_kb;
 fi;
 
+# disable block iostats
+for i in /sys/block/*/queue; do
+	echo 0 > $i/iostats
+done;
+
 # Enable force Fast Charge
 echo 1 > /sys/kernel/fast_charge/force_fast_charge;
 
