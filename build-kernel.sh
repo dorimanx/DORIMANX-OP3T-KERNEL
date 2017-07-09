@@ -110,6 +110,7 @@ BUILD_NOW()
 		#cp READY-KERNEL/Stock_WIFI/qca_cld_wlan.stock READY-KERNEL/installer/boot/dori_modules/wlan.ko
 		echo "place holder" > READY-KERNEL/installer/boot/dori_modules/qca_cld/ignore-me
 		cp -v -r -p READY-KERNEL/modules/*.ko READY-KERNEL/installer/boot/dori_modules/
+		echo "ok" > READY-KERNEL/installer/boot/dori_modules/dori_modules.ok
 		sync
 		du -sh READY-KERNEL/installer/boot/dori_modules/
 

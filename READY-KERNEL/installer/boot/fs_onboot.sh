@@ -16,6 +16,13 @@ while [ "$DATA_FOUND" -eq "0" ]; do
 	sleep 5;
 done;
 
+MODULES_CHECK=$(ls /system/lib/modules | grep dori_modules.ok | wc -l);
+if [ "$MODULES_CHECK" -eq "0" ]; then
+	rmmod wlan.ko > /dev/null 2>&1
+	umount /system/lib/modules > /dev/null 2>&1
+	mount --bind /dori_modules /system/lib/modules
+fi;
+
 DATA_GOV=$(cat /fs_gov.sh);
 if [ "$DATA_MODE" -eq "1" ]; then
 	echo $DATA_GOV > /sys/block/dm-0/queue/scheduler;
