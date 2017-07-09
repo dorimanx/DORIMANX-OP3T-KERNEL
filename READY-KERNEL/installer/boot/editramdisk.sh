@@ -37,8 +37,12 @@ if ! grep -q 'bg_apps_limit' /tmp/ramdisk/default.prop; then
 fi;
 
 # Start dorimanx script
+# First cleanup then add after init.environ.rc
+if [ $(grep -c "import /init.dorimanx.rc" /tmp/ramdisk/init.rc) == 1 ]; then
+	sed -i '/import \/init\.dorimanx\.rc/d' /tmp/ramdisk/init.rc
+fi
 if [ $(grep -c "import /init.dorimanx.rc" /tmp/ramdisk/init.rc) == 0 ]; then
-	sed -i "1i import /init.dorimanx.rc" /tmp/ramdisk/init.rc
+	sed -i "/import \/init\.environ\.rc/aimport /init.dorimanx.rc" /tmp/ramdisk/init.rc
 fi
 
 # Don't let bfq become default scheduler

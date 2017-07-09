@@ -13,10 +13,10 @@ ln -s /system/lib/modules/wlan.ko qca_cld_wlan.ko
 cd /
 
 echo "on boot" >> $CONFIGFILE
-echo "" >> $CONFIGFILE
-
-#for now will use stock wifi module.
+# Mount my kernel modules as expected.
+echo "rmmod wlan.ko" >> $CONFIGFILE
 echo "mount none /dori_modules /system/lib/modules/ bind" >> $CONFIGFILE
+echo "" >> $CONFIGFILE
 
 # fsync
 FSYNC=`grep "item.0.1" /tmp/aroma/mods.prop | cut -d '=' -f2`
@@ -187,6 +187,30 @@ echo "write /sys/block/sdc/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdd/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sde/queue/read_ahead_kb 128" >> $CONFIGFILE
 echo "write /sys/block/sdf/queue/read_ahead_kb 128" >> $CONFIGFILE
+
+# charge control
+CHARGE=`grep selected.1 /tmp/aroma/charge.prop | cut -d '=' -f2`
+if [ $CHARGE = 1 ]; then
+  echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp_icl_ma 1800" >> $CONFIGFILE
+  echo "write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 1800" >> $CONFIGFILE
+  echo "write /sys/module/dwc3_msm/parameters/dcp_max_current 1500" >> $CONFIGFILE
+  echo "write /sys/module/dwc3_msm/parameters/hvdcp_max_current 1800" >> $CONFIGFILE
+elif [ $CHARGE = 2 ]; then
+  echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp_icl_ma 1800" >> $CONFIGFILE
+  echo "write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 1800" >> $CONFIGFILE
+  echo "write /sys/module/dwc3_msm/parameters/dcp_max_current 1800" >> $CONFIGFILE
+  echo "write /sys/module/dwc3_msm/parameters/hvdcp_max_current 1800" >> $CONFIGFILE
+elif [ $CHARGE = 3 ]; then
+  echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp_icl_ma 2000" >> $CONFIGFILE
+  echo "write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 2000" >> $CONFIGFILE
+  echo "write /sys/module/dwc3_msm/parameters/dcp_max_current 2000" >> $CONFIGFILE
+  echo "write /sys/module/dwc3_msm/parameters/hvdcp_max_current 2000" >> $CONFIGFILE
+elif [ $CHARGE = 4 ]; then
+  echo "write /sys/module/qpnp_smbcharger/parameters/default_hvdcp_icl_ma 2500" >> $CONFIGFILE
+  echo "write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 2500" >> $CONFIGFILE
+  echo "write /sys/module/dwc3_msm/parameters/dcp_max_current 2500" >> $CONFIGFILE
+  echo "write /sys/module/dwc3_msm/parameters/hvdcp_max_current 2500" >> $CONFIGFILE
+fi
 
 echo "" >> $CONFIGFILE
 

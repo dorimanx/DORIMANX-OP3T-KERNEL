@@ -110,6 +110,16 @@ checkbox(
   "NETLINK Wakelock","Disable the NETLINK wakelock on suspend,\nmay brake NOTIFICATIONS!",0
 );
 
+selectbox(
+  "\nCharge Settings","<@center><b>\nSelect the non DASH charger limits</b>\n\n</@>","","charge.prop",
+
+  "Select max charge limit","",2,
+  "Stock Limit 1500ma","",0,
+  "Limit 1800ma","",0,
+  "Limit 2000ma","",0,
+  "Limit 2500ma","",1
+);
+
 menubox(
   "\nDorimanx Installer",
   "<@center>\nReady to install\n\n</@>",
