@@ -313,10 +313,11 @@ out:
  */
 #ifdef F2FS_OPT3_OEM_MODS
 struct f2fs_dir_entry *f2fs_find_entry(struct inode *dir,
-			struct qstr *child, struct page **res_page, struct ci_name_buf *ci_name_buf)
+			const struct qstr *child, struct page **res_page,
+			struct ci_name_buf *ci_name_buf)
 #else
 struct f2fs_dir_entry *f2fs_find_entry(struct inode *dir,
-			struct qstr *child, struct page **res_page)
+			const struct qstr *child, struct page **res_page)
 #endif
 {
 	struct f2fs_dir_entry *de = NULL;
@@ -351,7 +352,7 @@ struct f2fs_dir_entry *f2fs_parent_dir(struct inode *dir, struct page **p)
 #endif
 }
 
-ino_t f2fs_inode_by_name(struct inode *dir, struct qstr *qstr,
+ino_t f2fs_inode_by_name(struct inode *dir, const struct qstr *qstr,
 							struct page **page)
 {
 	ino_t res = 0;
