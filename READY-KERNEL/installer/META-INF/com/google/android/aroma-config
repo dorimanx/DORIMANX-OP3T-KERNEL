@@ -22,7 +22,7 @@
 ini_set("rom_name",             "Dorimanx-PWR-CORE");
 ini_set("rom_version",          "Build Ver See File.");
 ini_set("rom_author",           "Dorimanx");
-ini_set("rom_device",           "OnePlus 3T");
+ini_set("rom_device",           "OnePlus 3-T");
 ini_set("rom_date",             "Build Date See File.");
 
 ini_set("force_colorspace","rgba");
@@ -118,6 +118,14 @@ selectbox(
   "Limit 1800ma","",0,
   "Limit 2000ma","",0,
   "Limit 2500ma","",1
+);
+
+selectbox(
+  "\nSeLinux Mode","\n\n\n\n","","selinux.prop",
+
+  "Select SeLinux Security Mode","",2,
+  "Enforced","(stock)",1,
+  "Permissive","",0
 );
 
 menubox(

@@ -67,6 +67,10 @@ chmod 0755 /tmp/ramdisk/fs_onboot.sh
 cp /tmp/fs_gov.sh /tmp/ramdisk/
 chmod 0755 /tmp/ramdisk/fs_gov.sh
 
+# copy dori_sec.info to ramdisk root
+cp /tmp/dori_sec.info /tmp/ramdisk/
+chmod 0444 /tmp/ramdisk/dori_sec.info
+
 # copy busybox to ramdisk /sbin
 cp /tmp/busybox /tmp/ramdisk/sbin/
 chmod 0755 /tmp/ramdisk/sbin/busybox
@@ -82,3 +86,4 @@ chmod 0750 /tmp/ramdisk/init.dorimanx.rc
 # pack ramdisk
 find . | cpio -o -H newc | gzip > /tmp/boot.img-ramdisk.gz
 rm -r /tmp/ramdisk
+

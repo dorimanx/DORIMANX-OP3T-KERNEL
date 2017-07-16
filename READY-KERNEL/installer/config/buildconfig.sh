@@ -7,6 +7,7 @@
 CONFIGFILE="/tmp/init.dorimanx.rc"
 FS_DATA_GOV="/tmp/fs_gov.sh"
 BACKUP="/sdcard/.dorimanx.backup"
+SELINUX_MODE="/tmp/dori_sec.info"
 
 cd /tmp/dori_modules/qca_cld
 ln -s /system/lib/modules/wlan.ko qca_cld_wlan.ko
@@ -210,6 +211,14 @@ elif [ $CHARGE = 4 ]; then
   echo "write /sys/module/qpnp_smbcharger/parameters/default_dcp_icl_ma 2500" >> $CONFIGFILE
   echo "write /sys/module/dwc3_msm/parameters/dcp_max_current 2500" >> $CONFIGFILE
   echo "write /sys/module/dwc3_msm/parameters/hvdcp_max_current 2500" >> $CONFIGFILE
+fi
+
+# SeLinux Mode
+SEC_MOD=`grep selected.1 /tmp/aroma/selinux.prop | cut -d '=' -f2`
+if [ $SEC_MOD = 1 ]; then
+  echo "1" > $SELINUX_MODE
+elif [ $SEC_MOD = 2 ]; then
+  echo "0" > $SELINUX_MODE
 fi
 
 echo "" >> $CONFIGFILE
