@@ -659,7 +659,7 @@ int binder_alloc_mmap_handler(struct binder_alloc *alloc,
 	return 0;
 
 err_alloc_small_buf_failed:
-	kfree_no_resched(alloc->pages);
+	kfree(alloc->pages);
 	alloc->pages = NULL;
 err_alloc_pages_failed:
 	mutex_lock(&binder_alloc_mmap_lock);
@@ -713,7 +713,7 @@ void binder_alloc_deferred_release(struct binder_alloc *alloc)
 			__free_page(alloc->pages[i]);
 			page_count++;
 		}
-		kfree_no_resched(alloc->pages);
+		kfree(alloc->pages);
 		vfree(alloc->buffer);
 	}
 	mutex_unlock(&alloc->mutex);

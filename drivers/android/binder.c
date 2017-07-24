@@ -947,20 +947,6 @@ static long task_close_fd(struct binder_proc *proc, unsigned int fd)
 	return retval;
 }
 
-static void __set_user_nice_no_resched(long nice)
-{
-	preempt_disable();
-	set_user_nice(current, nice);
-	preempt_enable_no_resched();
-}
-
-static void kfree_no_resched(const void *objp)
-{
-	preempt_disable();
-	kfree(objp);
-	preempt_enable_no_resched();
-}
-
 static bool binder_has_work_ilocked(struct binder_thread *thread,
 				    bool do_proc_work)
 {
@@ -1175,7 +1161,7 @@ static void binder_do_set_priority(struct task_struct *task,
 					   &params);
 	}
 	if (is_fair_policy(policy))
-		__set_user_nice_no_resched(task, priority);
+		set_user_nice(task, priority);
 }
 
 static void binder_set_priority(struct task_struct *task,
@@ -1349,7 +1335,7 @@ static struct binder_node *binder_new_node(struct binder_proc *proc,
 
 static void binder_free_node(struct binder_node *node)
 {
-	kfree_no_resched(node);
+	kfree(node);
 	binder_stats_deleted(BINDER_STAT_NODE);
 }
 
@@ -1742,9 +1728,8 @@ static int binder_inc_ref_olocked(struct binder_ref *ref, int strong,
  *
  * Return: true if ref is cleaned up and ready to be freed
  */
-static bool binder_dec_ref_olocked(struct binder_ref **ptr_to_ref, int strong)
+static bool binder_dec_ref_olocked(struct binder_ref *ref, int strong)
 {
-	struct binder_ref *ref = *ptr_to_ref;
 	if (strong) {
 		if (ref->data.strong == 0) {
 			binder_user_error("%d invalid dec strong, ref %d desc %d s %d w %d\n",
@@ -1768,7 +1753,6 @@ static bool binder_dec_ref_olocked(struct binder_ref **ptr_to_ref, int strong)
 	}
 	if (ref->data.strong == 0 && ref->data.weak == 0) {
 		binder_cleanup_ref_olocked(ref);
-		*ptr_to_ref = NULL;
 		return true;
 	}
 	return false;
@@ -1825,7 +1809,7 @@ static void binder_free_ref(struct binder_ref *ref)
 {
 	if (ref->node)
 		binder_free_node(ref->node);
-	kfree_no_resched(ref->death);
+	kfree(ref->death);
 	kfree(ref);
 }
 
@@ -2058,7 +2042,7 @@ static void binder_free_transaction(struct binder_transaction *t)
 {
 	if (t->buffer)
 		t->buffer->transaction = NULL;
-	kfree_no_resched(t);
+	kfree(t);
 	binder_stats_deleted(BINDER_STAT_TRANSACTION);
 }
 
@@ -3056,7 +3040,7 @@ static void binder_transaction(struct binder_proc *proc,
 	if (!IS_ALIGNED(extra_buffers_size, sizeof(u64))) {
 		binder_user_error("%d:%d got transaction with unaligned buffers size, %lld\n",
 				  proc->pid, thread->pid,
-				  extra_buffers_size);
+				  (u64)extra_buffers_size);
 		return_error = BR_FAILED_REPLY;
 		return_error_param = -EINVAL;
 		return_error_line = __LINE__;
@@ -3275,10 +3259,10 @@ err_copy_data_failed:
 	t->buffer->transaction = NULL;
 	binder_alloc_free_buf(&target_proc->alloc, t->buffer);
 err_binder_alloc_buf_failed:
-	kfree_no_resched(tcomplete);
+	kfree(tcomplete);
 	binder_stats_deleted(BINDER_STAT_TRANSACTION_COMPLETE);
 err_alloc_tcomplete_failed:
-	kfree_no_resched(t);
+	kfree(t);
 	binder_stats_deleted(BINDER_STAT_TRANSACTION);
 err_alloc_t_failed:
 err_bad_call_stack:
@@ -3411,17 +3395,12 @@ static int binder_thread_write(struct binder_proc *proc,
 					strong, target, ret);
 				break;
 			}
-			if (ref == NULL) {
-				binder_debug(BINDER_DEBUG_USER_REFS,
-					"binder: %d:%d %s ref deleted",
-					proc->pid, thread->pid, debug_string);
-			} else {
-				binder_debug(BINDER_DEBUG_USER_REFS,
-					"binder: %d:%d %s ref %d desc %d s %d w %d for node %d\n",
-					proc->pid, thread->pid, debug_string, ref->debug_id,
-					ref->desc, ref->strong, ref->weak, ref->node->debug_id);
-			}
-      break;
+			binder_debug(BINDER_DEBUG_USER_REFS,
+				     "%d:%d %s ref %d desc %d s %d w %d\n",
+				     proc->pid, thread->pid, debug_string,
+				     rdata.debug_id, rdata.desc, rdata.strong,
+				     rdata.weak);
+			break;
 		}
 		case BC_INCREFS_DONE:
 		case BC_ACQUIRE_DONE: {
@@ -4000,8 +3979,7 @@ retry:
 			binder_debug(BINDER_DEBUG_TRANSACTION_COMPLETE,
 				     "%d:%d BR_TRANSACTION_COMPLETE\n",
 				     proc->pid, thread->pid);
-
-			kfree_no_resched(w);
+			kfree(w);
 			binder_stats_deleted(BINDER_STAT_TRANSACTION_COMPLETE);
 		} break;
 		case BINDER_WORK_NODE: {
@@ -4114,7 +4092,7 @@ retry:
 				      (u64)cookie);
 			if (w->type == BINDER_WORK_CLEAR_DEATH_NOTIFICATION) {
 				binder_inner_proc_unlock(proc);
-				kfree_no_resched(death);
+				kfree(death);
 				binder_stats_deleted(BINDER_STAT_DEATH);
 			} else {
 				binder_enqueue_work_ilocked(
@@ -4276,7 +4254,7 @@ static void binder_release_work(struct binder_proc *proc,
 		case BINDER_WORK_TRANSACTION_COMPLETE: {
 			binder_debug(BINDER_DEBUG_DEAD_TRANSACTION,
 				"undelivered TRANSACTION_COMPLETE\n");
-			kfree_no_resched(w);
+			kfree(w);
 			binder_stats_deleted(BINDER_STAT_TRANSACTION_COMPLETE);
 		} break;
 		case BINDER_WORK_DEAD_BINDER_AND_CLEAR:
@@ -4287,7 +4265,7 @@ static void binder_release_work(struct binder_proc *proc,
 			binder_debug(BINDER_DEBUG_DEAD_TRANSACTION,
 				"undelivered death notification, %016llx\n",
 				(u64)death->cookie);
-			kfree_no_resched(death);
+			kfree(death);
 			binder_stats_deleted(BINDER_STAT_DEATH);
 		} break;
 		default:
@@ -4367,7 +4345,7 @@ static void binder_free_proc(struct binder_proc *proc)
 	binder_alloc_deferred_release(&proc->alloc);
 	put_task_struct(proc->tsk);
 	binder_stats_deleted(BINDER_STAT_PROC);
-	kfree_no_resched(proc);
+	kfree(proc);
 }
 
 static void binder_free_thread(struct binder_thread *thread)
@@ -4376,7 +4354,7 @@ static void binder_free_thread(struct binder_thread *thread)
 	binder_stats_deleted(BINDER_STAT_THREAD);
 	binder_proc_dec_tmpref(thread->proc);
 	put_task_struct(thread->task);
-	kfree_no_resched(thread);
+	kfree(thread);
 }
 
 static int binder_thread_release(struct binder_proc *proc,
