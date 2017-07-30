@@ -76,7 +76,7 @@ BUILD_NOW()
 	fi;
 
 	# build kernel and modules
-	time make ARCH=arm64 CROSS_COMPILE=android-toolchain-arm64/bin/aarch64-OP3T-linux-gnu- -j $NR_CPUS
+	time make ARCH=arm64 CROSS_COMPILE=android-toolchain-arm64/bin/aarch64-OP3T-linux-android- -j $NR_CPUS
 
 	cp "$KERNELDIR"/.config "$KERNELDIR"/arch/arm64/configs/"$KERNEL_CONFIG_FILE";
 
