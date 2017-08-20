@@ -418,13 +418,19 @@ static void synaptics_ts_probe_func(struct work_struct *w)
 
 static int oem_synaptics_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
+	int i;
 	optimize_data.client = client;
 	optimize_data.dev_id = id;
 	optimize_data.workqueue = create_workqueue("tpd_probe_optimize");
 	INIT_DELAYED_WORK(&(optimize_data.work), synaptics_ts_probe_func);
 	TPD_ERR("before on cpu [%d]\n",smp_processor_id());
 
-    queue_delayed_work(optimize_data.workqueue,&(optimize_data.work),msecs_to_jiffies(300));
+	for (i = 0; i < NR_CPUS; i++){
+         TPD_ERR("check CPU[%d] is [%s]\n",i,cpu_is_offline(i)?"offline":"online");
+		 if (cpu_online(i) && (i != smp_processor_id()))
+            break;
+    }
+    queue_delayed_work_on(i != NR_CPUS?i:0,optimize_data.workqueue,&(optimize_data.work),msecs_to_jiffies(300));
 
 	return probe_ret;
 }

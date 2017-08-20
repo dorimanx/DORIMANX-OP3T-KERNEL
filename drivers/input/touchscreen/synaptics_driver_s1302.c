@@ -224,6 +224,7 @@ static void synaptics_ts_probe_func(struct work_struct *w)
 
 static int oem_synaptics_ts_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
+	int i;
 	optimize_data.client = client;
 	optimize_data.dev_id = id;
 	optimize_data.workqueue = create_workqueue("tc_probe_optimize");
@@ -232,7 +233,12 @@ static int oem_synaptics_ts_probe(struct i2c_client *client, const struct i2c_de
 	//spin_lock_irqsave(&oem_lock, flags);
 	if(get_boot_mode() == MSM_BOOT_MODE__NORMAL)
 	{
-        queue_delayed_work(optimize_data.workqueue,&(optimize_data.work),msecs_to_jiffies(300));
+		for (i = 0; i < NR_CPUS; i++){
+            TPD_ERR("boot_time: [synaptics_ts_probe] CPU%d is %s\n",i,cpu_is_offline(i)?"offline":"online");
+            if (cpu_online(i) && (i != smp_processor_id()))
+                break;
+	    }
+        queue_delayed_work_on(i != NR_CPUS?i:0,optimize_data.workqueue,&(optimize_data.work),msecs_to_jiffies(300));
 	}else{
 		queue_delayed_work_on(0,optimize_data.workqueue,&(optimize_data.work),msecs_to_jiffies(300));
 	}
