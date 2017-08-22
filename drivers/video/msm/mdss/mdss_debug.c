@@ -44,9 +44,8 @@
 
 #define INVALID_XIN_ID     0xFF
 
-static DEFINE_MUTEX(mdss_debug_lock);
-
 static char panel_reg[2] = {DEFAULT_READ_PANEL_POWER_MODE_REG, 0x00};
+static DEFINE_MUTEX(mdss_debug_lock);
 
 static int panel_debug_base_open(struct inode *inode, struct file *file)
 {

@@ -908,13 +908,12 @@ static int mdss_dsi_cmd_flush(struct file *file, fl_owner_t id)
 		pcmds->buf = buf;
 		pcmds->blen = blen;
 	}
-	mutex_unlock(&pcmds->dbg_mutex);
-
 	on_pcmds->cmds = kzalloc(cnt * sizeof(struct dsi_cmd_desc),
 						GFP_KERNEL);
 	if (!on_pcmds->cmds)
 		{
 			pr_err("alloc memory fail\n");
+			mutex_unlock(&pcmds->dbg_mutex);
 			return 0;
 		}
 
@@ -933,6 +932,7 @@ static int mdss_dsi_cmd_flush(struct file *file, fl_owner_t id)
 		bp += dchdr->dlen;
 		len -= dchdr->dlen;
 	}
+	mutex_unlock(&pcmds->dbg_mutex);
 	return 0;
 }
 
