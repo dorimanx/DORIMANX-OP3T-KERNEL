@@ -45,10 +45,12 @@ if [ $(grep -c "import /init.dorimanx.rc" /tmp/ramdisk/init.rc) == 0 ]; then
 	sed -i "/import \/init\.environ\.rc/aimport /init.dorimanx.rc" /tmp/ramdisk/init.rc
 fi
 
-# Don't let bfq become default scheduler
-if [ $(grep -c "setprop sys.io.scheduler \"bfq\"" /tmp/ramdisk/init.qcom.power.rc) == 1 ]; then
-	sed -i "/setprop sys\.io\.scheduler \"bfq\"/d" /tmp/ramdisk/init.qcom.power.rc
-fi
+if [ -e /tmp/ramdisk/init.qcom.power.rc ]; then
+	# Don't let bfq become default scheduler
+	if [ $(grep -c "setprop sys.io.scheduler \"bfq\"" /tmp/ramdisk/init.qcom.power.rc) == 1 ]; then
+		sed -i "/setprop sys\.io\.scheduler \"bfq\"/d" /tmp/ramdisk/init.qcom.power.rc
+	fi
+fi;
 
 # Copy modules to ramdisk
 cp -a /tmp/dori_modules/* /tmp/ramdisk/dori_modules/
@@ -74,10 +76,6 @@ chmod 0444 /tmp/ramdisk/dori_sec.info
 # copy busybox to ramdisk /sbin
 cp /tmp/busybox /tmp/ramdisk/sbin/
 chmod 0755 /tmp/ramdisk/sbin/busybox
-
-# allow mounting
-chmod 0750 /tmp/sepolicy-inject
-/tmp/sepolicy-inject -s init -t system_file -c dir -p mounton -P /tmp/ramdisk/sepolicy
 
 # copy dorimanx scripts
 cp /tmp/init.dorimanx.rc /tmp/ramdisk/init.dorimanx.rc

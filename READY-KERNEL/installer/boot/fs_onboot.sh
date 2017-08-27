@@ -5,11 +5,11 @@ export PATH=${PATH}:/system/bin:/sbin
 DATA_FOUND=0
 DATA_MODE=0
 while [ "$DATA_FOUND" -eq "0" ]; do
-	if [ "$(mount | grep dm-0 | wc -l)" -eq "1" ]; then
+	if [ "$(mount | grep dm-0 | wc -l)" -ge "1" ]; then
 		DATA_FOUND=1
 		DATA_MODE=1
 	fi
-	if [ "$(mount | grep sda15 | wc -l)" -eq "1" ]; then
+	if [ "$(mount | grep sda15 | wc -l)" -ge "1" ]; then
 		DATA_FOUND=1
 		DATA_MODE=2
 	fi
@@ -161,7 +161,7 @@ fi;
 # add busybox mount link
 cd /sbin/
 /sbin/busybox mount -o remount,rw /
-ln -s busybox mount
+/sbin/busybox ln -s /sbin/busybox /sbin/mount
 /sbin/busybox mount -o remount,ro /
 cd /
 
