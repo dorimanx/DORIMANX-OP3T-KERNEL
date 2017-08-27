@@ -148,6 +148,13 @@ if [ "$INITD_MODE" -eq "1" ]; then
 	echo "initd finished" > /data/initd_status;
 fi;
 
+# add busybox mount link
+cd /sbin/
+/sbin/busybox mount -o remount,rw /
+/sbin/busybox ln -s /sbin/busybox /sbin/mount
+/sbin/busybox mount -o remount,ro /
+cd /
+
 # Control SeLinux
 SELINUX_MODE=$(cat /dori_sec.info)
 if [ "$SELINUX_MODE" -eq "1" ]; then
@@ -157,11 +164,4 @@ else
 		echo "0" > /sys/fs/selinux/enforce;
 	fi
 fi;
-
-# add busybox mount link
-cd /sbin/
-/sbin/busybox mount -o remount,rw /
-/sbin/busybox ln -s /sbin/busybox /sbin/mount
-/sbin/busybox mount -o remount,ro /
-cd /
 
