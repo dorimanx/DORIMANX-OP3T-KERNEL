@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 3.18.63 Kernel Configuration
+# Linux/arm64 3.18.69 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -3923,6 +3923,7 @@ CONFIG_MSM_IRQ=y
 #
 CONFIG_ANDROID_BINDER_IPC=y
 CONFIG_ANDROID_BINDER_DEVICES="binder"
+# CONFIG_ANDROID_BINDER_IPC_SELFTEST is not set
 # CONFIG_CORESIGHT is not set
 
 #
