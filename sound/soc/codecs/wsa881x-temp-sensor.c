@@ -24,7 +24,7 @@
 #define LOW_TEMP_THRESHOLD 5
 #define HIGH_TEMP_THRESHOLD 45
 #define TEMP_INVALID	0xFFFF
-#define DEFAULT_TEMP 28
+#define SOUND_DEFAULT_TEMP 28
 
 /*
  * wsa881x_get_temp - get wsa temperature
@@ -70,7 +70,7 @@ int wsa881x_get_temp(struct thermal_zone_device *thermal,
 		 * and reset the suspend flag.
 		 */
 		atomic_set(&pdata->is_suspend_spk, 0);
-		*temp = DEFAULT_TEMP;
+		*temp = SOUND_DEFAULT_TEMP;
 		return 0;
 	}
 	if (pdata->wsa_temp_reg_read) {
