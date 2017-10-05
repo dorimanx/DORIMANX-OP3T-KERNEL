@@ -1,3 +1,4 @@
+ccflags-y += -Wno-int-in-bool-context
 obj-$(CONFIG_SOC_CAMERA)		+= soc_camera.o soc_mediabus.o
 obj-$(CONFIG_SOC_CAMERA_SCALE_CROP)	+= soc_scale_crop.o
 

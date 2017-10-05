@@ -1,7 +1,14 @@
 
         This is Kernel for OP3/T N 7.x.x OOS 4.x.x
 
+To build using ubuntu 16.04!
 
+sudo add-apt-repository ppa:jonathonf/gcc-7.1
+sudo apt-get update
+sudo apt-get install libncurses5-dev libncursesw5-dev python bc ccache gcc-7 g++-7 cmake build-essential gcc zip
+
+
+Other platforms install same things. with local installer.
 
 
         Linux kernel release 3.x <http://kernel.org/>
