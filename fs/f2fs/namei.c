@@ -459,6 +459,7 @@ static int f2fs_unlink(struct inode *dir, struct dentry *dentry)
 		return -EIO;
 
 	dquot_initialize(dir);
+	dquot_initialize(inode);
 
 #ifdef F2FS_OPT3_OEM_MODS
 	de = f2fs_find_entry(dir, &dentry->d_name, &page, NULL);
@@ -837,6 +838,9 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	dquot_initialize(old_dir);
 
 	dquot_initialize(new_dir);
+
+	if (new_inode)
+		dquot_initialize(new_inode);
 
 #ifdef F2FS_OPT3_OEM_MODS
 	old_entry = f2fs_find_entry(old_dir, &old_dentry->d_name, &old_page, NULL);
