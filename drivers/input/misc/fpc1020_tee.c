@@ -284,6 +284,7 @@ static DEVICE_ATTR(irq, S_IRUSR | S_IWUSR, irq_get, irq_ack);
 extern void int_touch(void);
 extern struct completion key_cm;
 extern bool virtual_key_enable;
+extern bool s3320_touch_active(void);
 
 bool key_home_pressed = false;
 EXPORT_SYMBOL(key_home_pressed);
@@ -304,7 +305,7 @@ static ssize_t report_home_set(struct device *dev,
 #endif
         if(virtual_key_enable){
                 key_home_pressed = true;
-        }else{
+        }else if (!s3320_touch_active()) {
             input_report_key(fpc1020->input_dev,
                             KEY_HOME, 1);
             input_sync(fpc1020->input_dev);

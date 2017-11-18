@@ -184,6 +184,8 @@ static int fb_notifier_callback(struct notifier_block *self, unsigned long event
 static int synaptics_soft_reset(struct synaptics_ts_data *ts);
 static void synaptics_hard_reset(struct synaptics_ts_data *ts);
 
+extern bool s3320_touch_active(void);
+
 /*-------------------------------Using Struct----------------------------------*/
 static const struct i2c_device_id synaptics_ts_id[] = {
 	{ TPD_DEVICE, 0 },
@@ -930,7 +932,7 @@ static void synaptics_ts_report(struct synaptics_ts_data *ts )
 #elif (defined SUPPORT_VIRTUAL_KEY)
         if (virtual_key_enable)
             int_virtual_key(ts);
-//        else if (!ts->stop_keypad)
+        else if (!s3320_touch_active())
             int_key(ts);
 #endif
     }

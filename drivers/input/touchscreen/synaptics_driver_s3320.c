@@ -513,6 +513,8 @@ struct synaptics_ts_data {
 	spinlock_t isr_lock;
 	bool i2c_awake;
 	struct completion i2c_resume;
+
+	bool touch_active;
 };
 
 static struct device_attribute attrs_oem[] = {
@@ -1140,6 +1142,13 @@ static void synaptics_get_coordinate_point(struct synaptics_ts_data *ts)
 		(coordinate_buf[24] & 0x20) ? 0 : 2; // 1--clockwise, 0--anticlockwise, not circle, report 2
 }
 
+bool s3320_touch_active(void)
+{
+	struct synaptics_ts_data *ts = ts_g;
+
+	return ts ? ts->touch_active : false;
+}
+
 static void gesture_judge(struct synaptics_ts_data *ts)
 {
 	unsigned int keyCode = KEY_F4;
@@ -1661,6 +1670,8 @@ static irqreturn_t synaptics_irq_thread_fn(int irq, void *dev_id)
 
 	if (ret & 0x400) {
 		uint8_t finger_num = int_touch();
+
+		ts->touch_active = finger_num;
 
 		/* All fingers up; do get base once */
 		if (!get_tp_base && !finger_num) {
@@ -4051,6 +4062,7 @@ static void synaptics_suspend_resume(struct work_struct *work)
 					ts->pinctrl_state_suspend);
 			}
 		}
+		ts->touch_active = false;
 	} else {
 		if (ts->gesture_enable) {
 			synaptics_enable_interrupt_for_gesture(ts, false);
