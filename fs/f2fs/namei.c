@@ -429,7 +429,6 @@ static struct dentry *f2fs_lookup(struct inode *dir, struct dentry *dentry,
 		err = -EPERM;
 		goto out_iput;
 	}
-
 out_splice:
 #ifdef F2FS_OPT3_OEM_MODS
 	if (ci_name_buf.name[0] != '\0') {
@@ -447,10 +446,9 @@ out_splice:
 	new = d_splice_alias(inode, dentry);
 	if (IS_ERR(new))
 		err = PTR_ERR(new);
-		trace_f2fs_lookup_end(dir, dentry, ino, err);
+	trace_f2fs_lookup_end(dir, dentry, ino, err);
 	return new;
 #endif
-
 out_iput:
 	iput(inode);
 out:
