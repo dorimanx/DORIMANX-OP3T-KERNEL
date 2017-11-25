@@ -4039,6 +4039,7 @@ static void synaptics_suspend_resume(struct work_struct *work)
 {
 	struct synaptics_ts_data *ts = container_of(work, typeof(*ts), pm_work);
 
+	mutex_lock(&ts->mutex);
 	if (ts->screen_off) {
 		if (ts->gesture_enable) {
 			synaptics_enable_interrupt_for_gesture(ts, true);
@@ -4062,6 +4063,7 @@ static void synaptics_suspend_resume(struct work_struct *work)
 			queue_delayed_work(get_base_report, &ts->base_work,msecs_to_jiffies(1));
 		}
 	}
+	mutex_unlock(&ts->mutex);
 }
 
 #ifdef SUPPORT_VIRTUAL_KEY
