@@ -4522,7 +4522,6 @@ static int synaptics_i2c_suspend(struct device *dev)
 static int synaptics_i2c_resume(struct device *dev)
 {
 	struct synaptics_ts_data *ts = dev_get_drvdata(dev);
-	int ret;
 	unsigned long flags;
 
 	spin_lock_irqsave(&ts->isr_lock, flags);
