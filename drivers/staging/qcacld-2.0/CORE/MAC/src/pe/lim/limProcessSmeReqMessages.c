@@ -6700,7 +6700,7 @@ limUpdateIBssPropAddIEs(tpAniSirGlobal pMac, tANI_U8 **pDstData_buff,
 
     if ((0 == oui_length) || (NULL == ibss_ie)) {
         VOS_TRACE(VOS_MODULE_ID_PE, VOS_TRACE_LEVEL_ERROR,
-                  FL("Invalid set IBSS vendor IE comamnd length %d ibss_ie %p"),
+                  FL("Invalid set IBSS vendor IE comamnd length %d ibss_ie %pK"),
                   oui_length, ibss_ie);
         return FALSE;
     }
@@ -6825,7 +6825,7 @@ limProcessModifyAddIEs(tpAniSirGlobal pMac, tANI_U32 *pMsg)
         }
         else
         {
-            limLog(pMac, LOGE, FL("Invalid request pIEBuffer %p ieBufferlength"
+            limLog(pMac, LOGE, FL("Invalid request pIEBuffer %pK ieBufferlength"
                             " %d ieIDLen %d ieID %d. update Type %d"),
                             pModifyAddIEs->modifyIE.pIEBuffer,
                             pModifyAddIEs->modifyIE.ieBufferlength,
@@ -7102,6 +7102,21 @@ limProcessUpdateAddIEs(tpAniSirGlobal pMac, tANI_U32 *pMsg)
                 tANI_U16 new_length = pUpdateAddIEs->updateIE.ieBufferlength +
                                 psessionEntry->addIeParams.probeRespDataLen;
                 tANI_U8 *new_ptr = vos_mem_malloc(new_length);
+                /* Multiple back to back append commands
+                 * can lead to a huge length.So, check
+                 * for the validity of the length.
+                 */
+                if (psessionEntry->addIeParams.probeRespDataLen >
+                     (USHRT_MAX - pUpdateAddIEs->updateIE.ieBufferlength))
+                {
+                    limLog(pMac, LOGE,
+                           FL("IE Length overflow, curr:%d, new:%d."),
+                           psessionEntry->addIeParams.probeRespDataLen,
+                           pUpdateAddIEs->updateIE.ieBufferlength);
+                    vos_mem_free(pUpdateAddIEs->updateIE.pAdditionIEBuffer);
+                    pUpdateAddIEs->updateIE.pAdditionIEBuffer = NULL;
+                    return;
+                }
                 if (NULL == new_ptr)
                 {
                     limLog(pMac, LOGE, FL("Memory allocation failed."));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2016 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2013-2018 The Linux Foundation. All rights reserved.
  *
  * Previously licensed under the ISC license by Qualcomm Atheros, Inc.
  *
@@ -1889,7 +1889,7 @@ dbglog_print_raw_data(A_UINT32 *buffer, A_UINT32 length)
     char parseArgsString[DBGLOG_PARSE_ARGS_STRING_LENGTH];
     char *dbgidString;
 
-    while (count < length) {
+    while ((count + 1) < length) {
 
         debugid = DBGLOG_GET_DBGID(buffer[count + 1]);
         moduleid = DBGLOG_GET_MODULEID(buffer[count + 1]);
@@ -1901,12 +1901,15 @@ dbglog_print_raw_data(A_UINT32 *buffer, A_UINT32 length)
             OS_MEMZERO(parseArgsString, sizeof(parseArgsString));
             totalWriteLen = 0;
 
+            if (!numargs || (count + numargs + 2 > length))
+                goto skip_args_processing;
+
             for (curArgs = 0; curArgs < numargs; curArgs++){
                 // Using sprintf_s instead of sprintf, to avoid length overflow
                 writeLen = snprintf(parseArgsString + totalWriteLen, DBGLOG_PARSE_ARGS_STRING_LENGTH - totalWriteLen, "%x ", buffer[count + 2 + curArgs]);
                 totalWriteLen += writeLen;
             }
-
+skip_args_processing:
             if (debugid < MAX_DBG_MSGS){
                 dbgidString = DBG_MSG_ARR[moduleid][debugid];
                 if (dbgidString != NULL) {
@@ -2184,7 +2187,7 @@ diag_fw_handler(ol_scn_t scn, u_int8_t *data, u_int32_t datalen)
 {
 
     tp_wma_handle wma = (tp_wma_handle)scn;
-    wmitlv_cmd_param_info *param_buf;
+    WMI_DIAG_EVENTID_param_tlvs *param_buf;
     u_int8_t *datap;
     u_int32_t len = 0;
     u_int32_t *buffer;
@@ -2199,22 +2202,37 @@ diag_fw_handler(ol_scn_t scn, u_int8_t *data, u_int32_t datalen)
         len = datalen;
         wma->is_fw_assert = 0;
     } else {
-        param_buf = (wmitlv_cmd_param_info *) data;
+        param_buf = (WMI_DIAG_EVENTID_param_tlvs *) data;
         if (!param_buf) {
             AR_DEBUG_PRINTF(ATH_DEBUG_ERR,
                             ("Get NULL point message from FW\n"));
             return -1;
         }
 
-        param_buf = (wmitlv_cmd_param_info *) data;
-        datap = param_buf->tlv_ptr;
-        len = param_buf->num_elements;
+        param_buf = (WMI_DIAG_EVENTID_param_tlvs *) data;
+        datap = param_buf->bufp;
+        len = param_buf->num_bufp;
         if (!get_version) {
+		if (len < 2*(sizeof(uint32_t))) {
+			AR_DEBUG_PRINTF(ATH_DEBUG_ERR,
+				("len is less than expected\n"));
+			return A_ERROR;
+		}
              buffer = (u_int32_t *)datap  ;
              buffer++; /* skip offset */
              if (WLAN_DIAG_TYPE_CONFIG == DIAG_GET_TYPE(*buffer)) {
+			if (len < 3*(sizeof(uint32_t))) {
+				AR_DEBUG_PRINTF(ATH_DEBUG_ERR,
+						("len is less than expected\n"));
+				return A_ERROR;
+		}
                  buffer++; /* skip  */
                  if (DIAG_VERSION_INFO == DIAG_GET_ID(*buffer)) {
+			 if (len < 4*(sizeof(uint32_t))) {
+				AR_DEBUG_PRINTF(ATH_DEBUG_ERR,
+						("len is less than expected\n"));
+				return A_ERROR;
+			}
                     buffer++; /* skip  */
                     /* get payload */
                     get_version = *buffer;
@@ -2265,19 +2283,22 @@ diag_fw_handler(ol_scn_t scn, u_int8_t *data, u_int32_t datalen)
 static int
 process_fw_diag_event_data(uint8_t *datap, uint32_t num_data)
 {
-	uint32_t i;
 	uint32_t diag_type;
 	uint32_t nl_data_len; /* diag hdr + payload */
 	uint32_t diag_data_len; /* each fw diag payload */
 	struct wlan_diag_data *diag_data;
 
-	for (i = 0; i < num_data; i++) {
+	while (num_data > 0) {
 		diag_data = (struct wlan_diag_data *)datap;
 		diag_type = WLAN_DIAG_0_TYPE_GET(diag_data->word0);
 		diag_data_len = WLAN_DIAG_0_LEN_GET(diag_data->word0);
 		/* Length of diag struct and len of payload */
 		nl_data_len = sizeof(struct wlan_diag_data) + diag_data_len;
-
+		if (nl_data_len > num_data) {
+			AR_DEBUG_PRINTF(ATH_DEBUG_INFO,
+					("processed all the messages\n"));
+			return 0;
+		}
 		switch (diag_type) {
 		case DIAG_TYPE_FW_EVENT:
 			return send_fw_diag_nl_data(datap, nl_data_len,
@@ -2290,6 +2311,7 @@ process_fw_diag_event_data(uint8_t *datap, uint32_t num_data)
 		}
 		/* Move to the next event and send to cnss-diag */
 		datap += nl_data_len;
+		num_data -= nl_data_len;
 	}
 
 	return 0;
@@ -2357,6 +2379,11 @@ dbglog_parse_debug_logs(ol_scn_t scn, u_int8_t *data, u_int32_t datalen)
 
         datap = param_buf->bufp;
         len = param_buf->num_bufp;
+    }
+
+    if (len < sizeof(dropped)) {
+        AR_DEBUG_PRINTF(ATH_DEBUG_ERR, ("Invalid length\n"));
+        return A_ERROR;
     }
 
     dropped = *((A_UINT32 *)datap);
