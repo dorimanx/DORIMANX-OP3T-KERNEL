@@ -38,7 +38,7 @@ static struct inode *f2fs_new_inode(struct inode *dir, umode_t mode)
 		return ERR_PTR(-ENOMEM);
 
 	f2fs_lock_op(sbi);
-	if (!alloc_nid(sbi, &ino)) {
+	if (!f2fs_alloc_nid(sbi, &ino)) {
 		f2fs_unlock_op(sbi);
 		err = -ENOSPC;
 		goto fail;
@@ -196,7 +196,7 @@ static inline void set_file_temperature(struct f2fs_sb_info *sbi, struct inode *
 	up_read(&sbi->sb_lock);
 }
 
-int update_extension_list(struct f2fs_sb_info *sbi, const char *name,
+int f2fs_update_extension_list(struct f2fs_sb_info *sbi, const char *name,
 							bool hot, bool set)
 {
 	__u8 (*extlist)[F2FS_EXTENSION_LEN] = sbi->raw_super->extension_list;
@@ -293,7 +293,7 @@ static int f2fs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 		goto out;
 	f2fs_unlock_op(sbi);
 
-	alloc_nid_done(sbi, ino);
+	f2fs_alloc_nid_done(sbi, ino);
 
 	d_instantiate_new(dentry, inode);
 
@@ -303,7 +303,7 @@ static int f2fs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 	f2fs_balance_fs(sbi, true);
 	return 0;
 out:
-	handle_failed_inode(inode);
+	f2fs_handle_failed_inode(inode);
 	return err;
 }
 
@@ -397,7 +397,7 @@ static int __recover_dot_dentries(struct inode *dir, nid_t pino)
 		err = PTR_ERR(page);
 		goto out;
 	} else {
-		err = __f2fs_add_link(dir, &dot, NULL, dir->i_ino, S_IFDIR);
+		err = f2fs_do_add_link(dir, &dot, NULL, dir->i_ino, S_IFDIR);
 		if (err)
 			goto out;
 	}
@@ -411,7 +411,7 @@ static int __recover_dot_dentries(struct inode *dir, nid_t pino)
 	else if (IS_ERR(page))
 		err = PTR_ERR(page);
 	else
-		err = __f2fs_add_link(dir, &dotdot, NULL, pino, S_IFDIR);
+		err = f2fs_do_add_link(dir, &dotdot, NULL, pino, S_IFDIR);
 out:
 	if (!err)
 		clear_inode_flag(dir, FI_INLINE_DOTS);
@@ -550,7 +550,7 @@ static int f2fs_unlink(struct inode *dir, struct dentry *dentry)
 	f2fs_balance_fs(sbi, true);
 
 	f2fs_lock_op(sbi);
-	err = acquire_orphan_inode(sbi);
+	err = f2fs_acquire_orphan_inode(sbi);
 	if (err) {
 		f2fs_unlock_op(sbi);
 		f2fs_put_page(page, 0);
@@ -621,9 +621,9 @@ static int f2fs_symlink(struct inode *dir, struct dentry *dentry,
 	f2fs_lock_op(sbi);
 	err = f2fs_add_link(dentry, inode);
 	if (err)
-		goto out_handle_failed_inode;
+		goto out_f2fs_handle_failed_inode;
 	f2fs_unlock_op(sbi);
-	alloc_nid_done(sbi, inode->i_ino);
+	f2fs_alloc_nid_done(sbi, inode->i_ino);
 
 	err = fscrypt_encrypt_symlink(inode, symname, len, &disk_link);
 	if (err)
@@ -656,8 +656,8 @@ err_out:
 	f2fs_balance_fs(sbi, true);
 	goto out_free_encrypted_link;
 
-out_handle_failed_inode:
-	handle_failed_inode(inode);
+out_f2fs_handle_failed_inode:
+	f2fs_handle_failed_inode(inode);
 out_free_encrypted_link:
 	if (disk_link.name != (unsigned char *)symname)
 		kfree(disk_link.name);
@@ -691,7 +691,7 @@ static int f2fs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 		goto out_fail;
 	f2fs_unlock_op(sbi);
 
-	alloc_nid_done(sbi, inode->i_ino);
+	f2fs_alloc_nid_done(sbi, inode->i_ino);
 
 	d_instantiate_new(dentry, inode);
 
@@ -703,7 +703,7 @@ static int f2fs_mkdir(struct inode *dir, struct dentry *dentry, umode_t mode)
 
 out_fail:
 	clear_inode_flag(inode, FI_INC_LINK);
-	handle_failed_inode(inode);
+	f2fs_handle_failed_inode(inode);
 	return err;
 }
 
@@ -742,7 +742,7 @@ static int f2fs_mknod(struct inode *dir, struct dentry *dentry,
 		goto out;
 	f2fs_unlock_op(sbi);
 
-	alloc_nid_done(sbi, inode->i_ino);
+	f2fs_alloc_nid_done(sbi, inode->i_ino);
 	d_instantiate_new(dentry, inode);
 
 	if (IS_DIRSYNC(dir))
@@ -751,7 +751,7 @@ static int f2fs_mknod(struct inode *dir, struct dentry *dentry,
 	f2fs_balance_fs(sbi, true);
 	return 0;
 out:
-	handle_failed_inode(inode);
+	f2fs_handle_failed_inode(inode);
 	return err;
 }
 
@@ -778,7 +778,7 @@ static int __f2fs_tmpfile(struct inode *dir, struct dentry *dentry,
 	}
 
 	f2fs_lock_op(sbi);
-	err = acquire_orphan_inode(sbi);
+	err = f2fs_acquire_orphan_inode(sbi);
 	if (err)
 		goto out;
 
@@ -790,8 +790,8 @@ static int __f2fs_tmpfile(struct inode *dir, struct dentry *dentry,
 	 * add this non-linked tmpfile to orphan list, in this way we could
 	 * remove all unused data of tmpfile after abnormal power-off.
 	 */
-	add_orphan_inode(inode);
-	alloc_nid_done(sbi, inode->i_ino);
+	f2fs_add_orphan_inode(inode);
+	f2fs_alloc_nid_done(sbi, inode->i_ino);
 
 	if (whiteout) {
 		f2fs_i_links_write(inode, false);
@@ -807,9 +807,9 @@ static int __f2fs_tmpfile(struct inode *dir, struct dentry *dentry,
 	return 0;
 
 release_out:
-	release_orphan_inode(sbi);
+	f2fs_release_orphan_inode(sbi);
 out:
-	handle_failed_inode(inode);
+	f2fs_handle_failed_inode(inode);
 	return err;
 }
 
@@ -918,7 +918,7 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 		f2fs_lock_op(sbi);
 
-		err = acquire_orphan_inode(sbi);
+		err = f2fs_acquire_orphan_inode(sbi);
 		if (err)
 			goto put_out_dir;
 
@@ -932,9 +932,9 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		up_write(&F2FS_I(new_inode)->i_sem);
 
 		if (!new_inode->i_nlink)
-			add_orphan_inode(new_inode);
+			f2fs_add_orphan_inode(new_inode);
 		else
-			release_orphan_inode(sbi);
+			f2fs_release_orphan_inode(sbi);
 	} else {
 		f2fs_balance_fs(sbi, true);
 
@@ -1008,9 +1008,10 @@ static int f2fs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		f2fs_i_links_write(old_dir, false);
 	}
 	if (F2FS_OPTION(sbi).fsync_mode == FSYNC_MODE_STRICT) {
-		add_ino_entry(sbi, new_dir->i_ino, TRANS_DIR_INO);
+		f2fs_add_ino_entry(sbi, new_dir->i_ino, TRANS_DIR_INO);
 		if (S_ISDIR(old_inode->i_mode))
-			add_ino_entry(sbi, old_inode->i_ino, TRANS_DIR_INO);
+			f2fs_add_ino_entry(sbi, old_inode->i_ino,
+							TRANS_DIR_INO);
 	}
 
 	f2fs_unlock_op(sbi);
@@ -1165,8 +1166,8 @@ static int f2fs_cross_rename(struct inode *old_dir, struct dentry *old_dentry,
 	f2fs_mark_inode_dirty_sync(new_dir, false);
 
 	if (F2FS_OPTION(sbi).fsync_mode == FSYNC_MODE_STRICT) {
-		add_ino_entry(sbi, old_dir->i_ino, TRANS_DIR_INO);
-		add_ino_entry(sbi, new_dir->i_ino, TRANS_DIR_INO);
+		f2fs_add_ino_entry(sbi, old_dir->i_ino, TRANS_DIR_INO);
+		f2fs_add_ino_entry(sbi, new_dir->i_ino, TRANS_DIR_INO);
 	}
 
 	f2fs_unlock_op(sbi);
