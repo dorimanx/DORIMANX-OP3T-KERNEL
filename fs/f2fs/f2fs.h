@@ -2862,7 +2862,6 @@ struct dentry *f2fs_get_parent(struct dentry *child);
 /*
  * dir.c
  */
-void set_de_type(struct f2fs_dir_entry *de, umode_t mode);
 unsigned char get_de_type(struct f2fs_dir_entry *de);
 #ifdef F2FS_OPT3_OEM_MODS
 struct f2fs_dir_entry *find_target_dentry(struct fscrypt_name *fname,
