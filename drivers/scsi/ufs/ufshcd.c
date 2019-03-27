@@ -4005,9 +4005,6 @@ static int ufshcd_link_recovery(struct ufs_hba *hba)
 		flush_work(&hba->eh_work);
 	} while (1);
 
-	/* WRITE_SAME command is not supported */
-	sdev->no_write_same = 1;
-
 	/*
 	 * we don't know if previous reset had really reset the host controller
 	 * or not. So let's force reset here to be sure.
