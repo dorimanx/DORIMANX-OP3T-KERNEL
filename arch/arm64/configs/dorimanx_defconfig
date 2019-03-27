@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 3.18.106 Kernel Configuration
+# Linux/arm64 3.18.137 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -4097,7 +4097,6 @@ CONFIG_CIFS=y
 # CONFIG_CIFS_STATS is not set
 # CONFIG_CIFS_WEAK_PW_HASH is not set
 CONFIG_CIFS_XATTR=y
-CONFIG_CIFS_POSIX=y
 # CONFIG_CIFS_DEBUG is not set
 # CONFIG_CIFS_SMB2 is not set
 # CONFIG_NCP_FS is not set
