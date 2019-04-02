@@ -3806,4 +3806,4 @@ static inline bool is_journalled_quota(struct f2fs_sb_info *sbi)
 	return false;
 }
 
-#endif
+#endif /* _LINUX_F2FS_H */
