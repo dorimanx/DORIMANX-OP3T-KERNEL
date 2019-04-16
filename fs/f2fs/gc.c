@@ -938,7 +938,7 @@ retry:
 		if (err) {
 			clear_cold_data(page);
 			if (err == -ENOMEM) {
-				congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(50));
+				congestion_wait(BLK_RW_ASYNC, msecs_to_jiffies(20));
 				goto retry;
 			}
 			if (is_dirty)

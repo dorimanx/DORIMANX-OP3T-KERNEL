@@ -825,7 +825,6 @@ static int truncate_node(struct dnode_of_data *dn)
 {
 	struct f2fs_sb_info *sbi = F2FS_I_SB(dn->inode);
 	struct node_info ni;
-	pgoff_t index;
 	int err;
 	pgoff_t index;
 
